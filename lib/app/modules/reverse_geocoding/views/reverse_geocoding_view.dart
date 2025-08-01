@@ -23,14 +23,22 @@ class ReverseGeocodingView extends GetView<ReverseGeocodingController> {
                 labelText: 'Rechercher une localité',
                 border: OutlineInputBorder(),
                 suffixIcon: Icon(Icons.search),
+                hintText: 'Ex: Dakar, Plateau...',
               ),
               onChanged: (value) => controller.searchLocation(value),
             ),
           ),
           // Affichage de l'adresse actuelle
           Obx(() => controller.address.value.isNotEmpty
-              ? Padding(
+              ? Container(
+                  width: double.infinity,
                   padding: const EdgeInsets.all(8.0),
+                  margin: const EdgeInsets.symmetric(horizontal: 8.0),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.shade50,
+                    borderRadius: BorderRadius.circular(8.0),
+                    border: Border.all(color: Colors.blue.shade200),
+                  ),
                   child: Text(
                     'Adresse: ${controller.address.value}',
                     style: const TextStyle(fontSize: 14),
@@ -41,50 +49,70 @@ class ReverseGeocodingView extends GetView<ReverseGeocodingController> {
           Expanded(
             child: Obx(() {
               if (controller.searchResults.isNotEmpty) {
-                return ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: controller.searchResults.length,
-                  itemBuilder: (context, index) {
-                    final result = controller.searchResults[index];
-                    return ListTile(
-                      title: Text(result['display_name']),
-                      onTap: () {
-                        controller.selectLocation(result);
-                      },
-                    );
-                  },
+                return Container(
+                  color: Colors.white,
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: controller.searchResults.length,
+                    itemBuilder: (context, index) {
+                      final result = controller.searchResults[index];
+                      return Card(
+                        margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
+                        child: ListTile(
+                          leading: const Icon(Icons.location_on, color: Colors.red),
+                          title: Text(
+                            result['display_name'],
+                            style: const TextStyle(fontSize: 14),
+                          ),
+                          onTap: () {
+                            controller.selectLocation(result);
+                          },
+                        ),
+                      );
+                    },
+                  ),
                 );
               }
-              return FlutterMap(
-                mapController: controller.mapController,
-                options: MapOptions(
-                  initialCenter: controller.center.value,
-                  initialZoom: 12.0,
-                  onTap: (tapPosition, point) {
-                    controller.updateLocation(point.latitude, point.longitude);
-                    controller.fetchAddress(point.latitude, point.longitude);
-                  },
-                ),
-                children: [
-                  TileLayer(
-                    urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                    userAgentPackageName: 'com.example.demnaa_front',
+              
+              // Afficher la carte seulement si pas de résultats de recherche
+              return Container(
+                key: const ValueKey('map_container'), // Clé stable pour éviter les rebuilds
+                child: FlutterMap(
+                  mapController: controller.mapController,
+                  options: MapOptions(
+                    initialCenter: controller.center.value,
+                    initialZoom: 12.0,
+                    onTap: (tapPosition, point) {
+                      controller.center.value = point;
+                      controller.fetchAddress(point.latitude, point.longitude);
+                    },
+                    interactionOptions: const InteractionOptions(
+                      enableScrollWheel: true,
+                      enableMultiFingerGestureRace: true,
+                    ),
                   ),
-                  MarkerLayer(
-                    markers: [
-                      Marker(
-                        point: controller.center.value,
-                        width: 40,
-                        height: 40,
-                        child: const Icon(
-                          Icons.location_pin,
-                          color: Colors.red,
-                          size: 40,
+                  children: [
+                    TileLayer(
+                      urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                      userAgentPackageName: 'com.example.demnaa_front',
+                      maxZoom: 19,
+                    ),
+                    Obx(() => MarkerLayer(
+                      markers: [
+                        Marker(
+                          point: controller.center.value,
+                          width: 40,
+                          height: 40,
+                          child: const Icon(
+                            Icons.location_pin,
+                            color: Colors.red,
+                            size: 40,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                      ],
+                    )),
+                  ],
+                ),
               );
             }),
           ),
@@ -92,10 +120,19 @@ class ReverseGeocodingView extends GetView<ReverseGeocodingController> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          controller.updateLocation(48.8606, 2.3376); // Exemple: Tour Eiffel
-          controller.fetchAddress(48.8606, 2.3376);
+          // Retour à Dakar
+          controller.center.value = LatLng(14.716677, -17.467686);
+          controller.fetchAddress(14.716677, -17.467686);
+          if (controller.mapController != null) {
+            try {
+              controller.mapController!.move(LatLng(14.716677, -17.467686), 12.0);
+            } catch (e) {
+              print('Erreur lors du retour à Dakar: $e');
+            }
+          }
         },
-        child: const Icon(Icons.add_location),
+        child: const Icon(Icons.home_outlined),
+        tooltip: 'Retour à Dakar',
       ),
     );
   }
