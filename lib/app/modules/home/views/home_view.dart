@@ -1,6 +1,8 @@
+import 'package:demnaa_front/app/modules/create_favorite_place/controllers/create_favorite_place_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/home_controller.dart';
+
 
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
@@ -238,9 +240,7 @@ class HomeView extends GetView<HomeController> {
         );
       },
     );
-  }
-
-  Widget _buildServiceCard(String title, IconData icon, Gradient gradient, int delay) {
+  }Widget _buildServiceCard(String title, IconData icon, Gradient gradient, int delay) {
     return TweenAnimationBuilder<double>(
       duration: Duration(milliseconds: 600 + delay),
       tween: Tween(begin: 0.0, end: 1.0),
@@ -302,147 +302,53 @@ class HomeView extends GetView<HomeController> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Lieux favoris',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 15),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    _buildFavoriteItem(Icons.home, 'Domicile', Colors.blue),
-                    _buildFavoriteItem(Icons.work, 'Travail', Colors.green),
-                    _buildFavoriteItem(Icons.school, 'École/Université', Colors.purple),
-                    _buildFavoriteItem(Icons.add, 'Ajouter', Colors.grey),
+                    const Text(
+                      'Lieux favoris',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () => _showAllFavoriteS(),
+                      child: const Text(
+                        'Voir tout',
+                        style: TextStyle(
+                          color: Color(0xFF4A90E2),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildFavoriteItem(IconData icon, String label, Color color) {
-    return GestureDetector(
-      onTap: () => controller.onFavoriteTap(label),
-      child: Column(
-        children: [
-          Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              icon,
-              color: color,
-              size: 24,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey[600],
-              fontWeight: FontWeight.w500,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBonusSection() {
-    return AnimatedBuilder(
-      animation: controller.bonusAnimationController,
-      builder: (context, child) {
-        return Transform.scale(
-          scale: controller.bonusScaleAnimation.value,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Mes bonus',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
                 const SizedBox(height: 15),
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(15),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 15,
-                        offset: const Offset(0, 5),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 50,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFF26C6DA), Color(0xFF00ACC1)],
-                          ),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.card_giftcard,
-                          color: Colors.white,
-                          size: 24,
-                        ),
-                      ),
-                      const SizedBox(width: 15),
-                      const Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Effectuez une première commande',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black87,
-                              ),
-                            ),
-                            SizedBox(height: 5),
-                            Text(
-                              'pour voir vos bonus cadeaux',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Icon(
-                        Icons.arrow_forward_ios,
-                        size: 16,
-                        color: Colors.grey,
-                      ),
-                    ],
-                  ),
-                ),
+                
+                // Affichage des lieux favoris dynamiques
+                Obx(() {
+                  final places = controller.favoritePlaceController.favoritePlaces;
+                  final displayedPlaces = places.take(3).toList();
+                  
+                  return SizedBox(
+                    height: 100,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: displayedPlaces.length + 1, // +1 pour le bouton "Ajouter"
+                      itemBuilder: (context, index) {
+                        if (index == displayedPlaces.length) {
+                          // Bouton "Ajouter"
+                          return _buildAddFavoriteButton();
+                        }
+                        
+                        final place = displayedPlaces[index];
+                        return _buildFavoriteItemDynamic(place, index);
+                      },
+                    ),
+                  );
+                }),
               ],
             ),
           ),
@@ -451,62 +357,160 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  Widget _buildBottomNavigation() {
-    return Obx(() => Container(
-      height: 80,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 20,
-            offset: const Offset(0, -5),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          _buildBottomNavItem(Icons.home, 'Accueil', 0),
-          _buildBottomNavItem(Icons.history, 'Demandes', 1),
-          _buildBottomNavItem(Icons.person, 'Mon compte', 2),
-        ],
-      ),
-    ));
-  }
-
-  Widget _buildBottomNavItem(IconData icon, String label, int index) {
-    final isSelected = controller.selectedBottomIndex.value == index;
-    
+  Widget _buildFavoriteItemDynamic(FavoritePlace place, int index) {
     return GestureDetector(
-      onTap: () => controller.changeBottomNavIndex(index),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-        decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF4A90E2).withOpacity(0.1) : Colors.transparent,
-          borderRadius: BorderRadius.circular(20),
-        ),
+      onTap: () => controller.onFavoriteTap(place.name),
+      onLongPress: () => controller.deleteFavoritePlace(place),
+      child: Container(
+        width: 80,
+        margin: const EdgeInsets.only(right: 15),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              icon,
-              color: isSelected ? const Color(0xFF4A90E2) : Colors.grey,
-              size: 24,
+            Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
+                color: _getFavoriteColor(index).withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: Text(
+                  place.iconData,
+                  style: const TextStyle(fontSize: 24),
+                ),
+              ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 8),
             Text(
-              label,
+              place.name,
               style: TextStyle(
                 fontSize: 12,
-                color: isSelected ? const Color(0xFF4A90E2) : Colors.grey,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                color: Colors.grey[600],
+                fontWeight: FontWeight.w500,
               ),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildAddFavoriteButton() {
+    return GestureDetector(
+      onTap: () => controller.favoritePlaceController.openAddPlaceModal(),
+      child: Container(
+        width: 80,
+        margin: const EdgeInsets.only(right: 15),
+        child: Column(
+          children: [
+            Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
+                color: Colors.grey.withOpacity(0.1),
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: Colors.grey.withOpacity(0.3),
+                  style: BorderStyle.solid,
+                  width: 2,
+                ),
+              ),
+              child: const Icon(
+                Icons.add,
+                color: Colors.grey,
+                size: 24,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Ajouter',
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey[600],
+                fontWeight: FontWeight.w500,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  Widget _buildBottomNavigation() {
+  return BottomNavigationBar(
+    currentIndex: 0,
+    onTap: (index) {
+      // Gère la navigation ici
+      if (index == 0) {
+        // Page d'accueil
+      } else if (index == 1) {
+        // Historique ou autre
+      } else if (index == 2) {
+        // Profil
+      }
+    },
+    selectedItemColor: const Color(0xFF4A90E2),
+    items: const [
+      BottomNavigationBarItem(
+        icon: Icon(Icons.home),
+        label: 'Accueil',
+      ),
+      BottomNavigationBarItem(
+        icon: Icon(Icons.history),
+        label: 'Historique',
+      ),
+      BottomNavigationBarItem(
+        icon: Icon(Icons.person),
+        label: 'Profil',
+      ),
+    ],
+  );
+}
+Widget _buildBonusSection() {
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 20),
+    child: Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: const Color(0xFFE3F2FD),
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: const Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Profitez de nos offres spéciales !',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF1976D2),
+            ),
+          ),
+          SizedBox(height: 5),
+          Text(
+            'Découvrez les bons plans de la semaine.',
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.black54,
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+void _showAllFavoriteS() {
+  Get.toNamed('/favorites'); // Crée une route vers la page de favoris
+}
+
+
+  Color _getFavoriteColor(int index) {
+    final colors = [Colors.blue, Colors.green, Colors.purple, Colors.orange, Colors.red];
+    return colors[index % colors.length];
   }
 }

@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 
+import '../modules/create_favorite_place/bindings/create_favorite_place_binding.dart';
+import '../modules/create_favorite_place/views/create_favorite_place_view.dart';
 import '../modules/delivery/bindings/delivery_binding.dart';
 import '../modules/delivery/views/delivery_view.dart';
 import '../modules/home/bindings/home_binding.dart';
@@ -17,7 +19,7 @@ class AppPages {
   static final routes = [
     GetPage(
       name: _Paths.HOME,
-      page: () =>  HomeView(),
+      page: () => HomeView(),
       binding: HomeBinding(),
     ),
     GetPage(
@@ -27,8 +29,13 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.REVERSE_GEOCODING,
-      page: () =>  ReverseGeocodingView(),
+      page: () => ReverseGeocodingView(),
       binding: ReverseGeocodingBinding(),
+    ),
+    GetPage(
+      name: _Paths.CREATE_FAVORITE_PLACE,
+      page: () => const CreateFavoritePlaceView(),
+      binding: CreateFavoritePlaceBinding(),
     ),
   ];
 }

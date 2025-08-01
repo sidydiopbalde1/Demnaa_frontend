@@ -6,6 +6,7 @@ abstract class Routes {
   static const HOME = _Paths.HOME;
   static const DELIVERY = _Paths.DELIVERY;
   static const REVERSE_GEOCODING = _Paths.REVERSE_GEOCODING;
+  static const CREATE_FAVORITE_PLACE = _Paths.CREATE_FAVORITE_PLACE;
 }
 
 abstract class _Paths {
@@ -13,4 +14,5 @@ abstract class _Paths {
   static const HOME = '/home';
   static const DELIVERY = '/delivery';
   static const REVERSE_GEOCODING = '/reverse-geocoding';
+  static const CREATE_FAVORITE_PLACE = '/create-favorite-place';
 }
