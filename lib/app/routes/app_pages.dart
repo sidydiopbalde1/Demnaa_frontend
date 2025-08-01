@@ -17,7 +17,7 @@ class AppPages {
   static final routes = [
     GetPage(
       name: _Paths.HOME,
-      page: () => const HomeView(),
+      page: () =>  ReverseGeocodingView(),
       binding: HomeBinding(),
     ),
     GetPage(
@@ -27,7 +27,7 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.REVERSE_GEOCODING,
-      page: () => const ReverseGeocodingView(),
+      page: () =>  ReverseGeocodingView(),
       binding: ReverseGeocodingBinding(),
     ),
   ];
