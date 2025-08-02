@@ -1,9 +1,13 @@
+import 'package:demnaa_front/app/models/services_model.dart';
 import 'package:demnaa_front/app/modules/create_favorite_place/controllers/create_favorite_place_controller.dart';
+import 'package:demnaa_front/app/services/demnaa_services_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 
 class HomeController extends GetxController with GetTickerProviderStateMixin {
+  final ServiceService _serviceService = Get.find<ServiceService>();
+
   // Animation Controllers
   late AnimationController headerAnimationController;
   late AnimationController servicesAnimationController;
@@ -19,7 +23,12 @@ class HomeController extends GetxController with GetTickerProviderStateMixin {
   
   // Observable variables
   var selectedBottomIndex = 0.obs;
-  var userName = "User".obs;
+  var userName = "Sidy Diop Balde".obs;
+  
+  // Variables pour les services
+  var services = <ServiceModel>[].obs;
+  var isLoadingServices = false.obs;
+  var servicesError = ''.obs;
   
   // Instance du controller des lieux favoris
   late FavoritePlaceController favoritePlaceController;
@@ -32,11 +41,64 @@ class HomeController extends GetxController with GetTickerProviderStateMixin {
     favoritePlaceController = Get.put(FavoritePlaceController());
     
     _initializeAnimations();
+    _loadServices();
     _startAnimations();
   }
-  
+
+  // Charger les services depuis l'API
+  Future<void> _loadServices() async {
+    try {
+      isLoadingServices.value = true;
+      servicesError.value = '';
+      
+      final servicesList = await _serviceService.getServices();
+      
+      // Correction : utiliser .value = au lieu de .assignAll()
+      services.value = servicesList;
+      
+      print('🔥 Services chargés: ${services.length}');
+      
+    } catch (e) {
+      servicesError.value = e.toString();
+      print('❌ Erreur lors du chargement des services: $e');
+      
+      // Charger les services par défaut en cas d'erreur
+      services.value = _serviceService.getDefaultServices();
+      
+      Get.snackbar(
+        'Erreur',
+        'Impossible de charger les services. Données par défaut utilisées.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.orange.withOpacity(0.8),
+        colorText: Colors.white,
+        duration: const Duration(seconds: 3),
+      );
+    } finally {
+      isLoadingServices.value = false;
+    }
+  }
+
+  // Rafraîchir les services
+  Future<void> refreshServices() async {
+    await _loadServices();
+  }
+
+  // Gérer le tap sur un service
+  void onServiceTap(ServiceModel service) {
+    Get.snackbar(
+      'Service sélectionné',
+      'Vous avez choisi: ${service.displayName}',
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Colors.blue.withOpacity(0.8),
+      colorText: Colors.white,
+    );
+    
+    // Ici vous pouvez naviguer vers l'écran du service
+    // Get.toNamed('/service/${service.id}');
+  }
+
+  // Méthodes d'animation (inchangées)
   void _initializeAnimations() {
-    // Header animation
     headerAnimationController = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
@@ -58,7 +120,6 @@ class HomeController extends GetxController with GetTickerProviderStateMixin {
       curve: Curves.easeInOut,
     ));
     
-    // Services animation
     servicesAnimationController = AnimationController(
       duration: const Duration(milliseconds: 1000),
       vsync: this,
@@ -72,7 +133,6 @@ class HomeController extends GetxController with GetTickerProviderStateMixin {
       curve: Curves.elasticOut,
     ));
     
-    // Favorites animation
     favoritesAnimationController = AnimationController(
       duration: const Duration(milliseconds: 600),
       vsync: this,
@@ -86,7 +146,6 @@ class HomeController extends GetxController with GetTickerProviderStateMixin {
       curve: Curves.easeInOut,
     ));
     
-    // Bonus animation
     bonusAnimationController = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
@@ -102,7 +161,6 @@ class HomeController extends GetxController with GetTickerProviderStateMixin {
   }
   
   void _startAnimations() async {
-    // Animation en cascade
     headerAnimationController.forward();
     
     await Future.delayed(const Duration(milliseconds: 200));
@@ -119,33 +177,27 @@ class HomeController extends GetxController with GetTickerProviderStateMixin {
     selectedBottomIndex.value = index;
   }
   
-  void onServiceTap(String service) {
-    Get.snackbar(
-      'Service sélectionné',
-      'Vous avez choisi: $service',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.blue.withOpacity(0.8),
-      colorText: Colors.white,
-    );
-  }
-  
   void onFavoriteTap(String location) {
     if (location == 'Ajouter') {
-      // Ouvrir le modal d'ajout de lieu favori
       favoritePlaceController.openAddPlaceModal();
     } else {
-      // Naviguer vers le lieu favori
-      Get.snackbar(
-        'Lieu favori',
-        'Navigation vers: $location',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green.withOpacity(0.8),
-        colorText: Colors.white,
-      );
+      final place = favoritePlaceController.favoritePlaces
+          .firstWhereOrNull((p) => p.name == location);
+      
+      if (place != null) {
+        favoritePlaceController.openAddressModal(place);
+      } else {
+        Get.snackbar(
+          'Erreur',
+          'Lieu favori non trouvé',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red.withOpacity(0.8),
+          colorText: Colors.white,
+        );
+      }
     }
   }
   
-  // Supprimer un lieu favori avec confirmation
   void deleteFavoritePlace(FavoritePlace place) {
     Get.defaultDialog(
       title: 'Supprimer',
