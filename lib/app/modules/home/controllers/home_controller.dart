@@ -13,33 +13,33 @@ class HomeController extends GetxController with GetTickerProviderStateMixin {
   late AnimationController servicesAnimationController;
   late AnimationController favoritesAnimationController;
   late AnimationController bonusAnimationController;
-  
+
   // Animations
   late Animation<double> headerSlideAnimation;
   late Animation<double> headerFadeAnimation;
   late Animation<double> servicesSlideAnimation;
   late Animation<double> favoritesFadeAnimation;
   late Animation<double> bonusScaleAnimation;
-  
+
   // Observable variables
   var selectedBottomIndex = 0.obs;
-  var userName = "Sidy Diop Balde".obs;
-  
+  var userName = "Sidy Diop".obs;
+
   // Variables pour les services
   var services = <ServiceModel>[].obs;
   var isLoadingServices = false.obs;
   var servicesError = ''.obs;
-  
+
   // Instance du controller des lieux favoris
   late FavoritePlaceController favoritePlaceController;
-  
+
   @override
   void onInit() {
     super.onInit();
-    
+
     // Initialiser le controller des lieux favoris
     favoritePlaceController = Get.put(FavoritePlaceController());
-    
+
     _initializeAnimations();
     _loadServices();
     _startAnimations();
@@ -50,21 +50,21 @@ class HomeController extends GetxController with GetTickerProviderStateMixin {
     try {
       isLoadingServices.value = true;
       servicesError.value = '';
-      
+
       final servicesList = await _serviceService.getServices();
-      
+
       // Correction : utiliser .value = au lieu de .assignAll()
       services.value = servicesList;
-      
+
       print('🔥 Services chargés: ${services.length}');
-      
+
     } catch (e) {
       servicesError.value = e.toString();
       print('❌ Erreur lors du chargement des services: $e');
-      
+
       // Charger les services par défaut en cas d'erreur
       services.value = _serviceService.getDefaultServices();
-      
+
       Get.snackbar(
         'Erreur',
         'Impossible de charger les services. Données par défaut utilisées.',
@@ -92,7 +92,7 @@ class HomeController extends GetxController with GetTickerProviderStateMixin {
       backgroundColor: Colors.blue.withOpacity(0.8),
       colorText: Colors.white,
     );
-    
+
     // Ici vous pouvez naviguer vers l'écran du service
     // Get.toNamed('/service/${service.id}');
   }
@@ -103,7 +103,7 @@ class HomeController extends GetxController with GetTickerProviderStateMixin {
       duration: const Duration(milliseconds: 800),
       vsync: this,
     );
-    
+
     headerSlideAnimation = Tween<double>(
       begin: -100.0,
       end: 0.0,
@@ -111,7 +111,7 @@ class HomeController extends GetxController with GetTickerProviderStateMixin {
       parent: headerAnimationController,
       curve: Curves.easeOutCubic,
     ));
-    
+
     headerFadeAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
@@ -119,12 +119,12 @@ class HomeController extends GetxController with GetTickerProviderStateMixin {
       parent: headerAnimationController,
       curve: Curves.easeInOut,
     ));
-    
+
     servicesAnimationController = AnimationController(
       duration: const Duration(milliseconds: 1000),
       vsync: this,
     );
-    
+
     servicesSlideAnimation = Tween<double>(
       begin: 50.0,
       end: 0.0,
@@ -132,12 +132,12 @@ class HomeController extends GetxController with GetTickerProviderStateMixin {
       parent: servicesAnimationController,
       curve: Curves.elasticOut,
     ));
-    
+
     favoritesAnimationController = AnimationController(
       duration: const Duration(milliseconds: 600),
       vsync: this,
     );
-    
+
     favoritesFadeAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
@@ -145,12 +145,12 @@ class HomeController extends GetxController with GetTickerProviderStateMixin {
       parent: favoritesAnimationController,
       curve: Curves.easeInOut,
     ));
-    
+
     bonusAnimationController = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
     );
-    
+
     bonusScaleAnimation = Tween<double>(
       begin: 0.8,
       end: 1.0,
@@ -159,31 +159,31 @@ class HomeController extends GetxController with GetTickerProviderStateMixin {
       curve: Curves.bounceOut,
     ));
   }
-  
+
   void _startAnimations() async {
     headerAnimationController.forward();
-    
+
     await Future.delayed(const Duration(milliseconds: 200));
     servicesAnimationController.forward();
-    
+
     await Future.delayed(const Duration(milliseconds: 300));
     favoritesAnimationController.forward();
-    
+
     await Future.delayed(const Duration(milliseconds: 400));
     bonusAnimationController.forward();
   }
-  
+
   void changeBottomNavIndex(int index) {
     selectedBottomIndex.value = index;
   }
-  
+
   void onFavoriteTap(String location) {
     if (location == 'Ajouter') {
       favoritePlaceController.openAddPlaceModal();
     } else {
       final place = favoritePlaceController.favoritePlaces
           .firstWhereOrNull((p) => p.name == location);
-      
+
       if (place != null) {
         favoritePlaceController.openAddressModal(place);
       } else {
@@ -197,7 +197,7 @@ class HomeController extends GetxController with GetTickerProviderStateMixin {
       }
     }
   }
-  
+
   void deleteFavoritePlace(FavoritePlace place) {
     Get.defaultDialog(
       title: 'Supprimer',
@@ -213,7 +213,7 @@ class HomeController extends GetxController with GetTickerProviderStateMixin {
       },
     );
   }
-  
+
   @override
   void onClose() {
     headerAnimationController.dispose();
