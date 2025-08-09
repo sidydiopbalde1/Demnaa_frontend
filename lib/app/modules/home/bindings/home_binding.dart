@@ -1,3 +1,4 @@
+import 'package:demnaa_front/app/modules/adresse_search/controllers/adresse_search_controller.dart';
 import 'package:demnaa_front/app/services/api_service.dart';
 import 'package:get/get.dart';
 
@@ -29,6 +30,9 @@ class HomeBinding extends Bindings {
     // 2. HomeController (dépend des services ci-dessus)
     Get.lazyPut<HomeController>(
       () => HomeController(),
+    );
+     Get.lazyPut<AddressSearchController>(
+      () => AddressSearchController(),
     );
   }
 }
