@@ -40,3 +40,6 @@ flutter:
     - assets/images/demnaa_header.png
     - assets/images/demna_icone.png
     - assets/images/demnaa_icone_user.png
+    - assets/images/demnaa_livraison_moto.png
+    - assets/images/demna_moto_taxi.png
+    - assets/images/demnaa_moto_sante.png

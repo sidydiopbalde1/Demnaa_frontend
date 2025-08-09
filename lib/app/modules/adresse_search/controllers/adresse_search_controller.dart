@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 
 class AddressSearchController extends GetxController {
   // Text Controllers
-  final departureController = TextEditingController(text: '77 HB 23 24');
+  final departureController = TextEditingController(text: '784316538');
   final destinationController = TextEditingController();
   
   // Observable variables
@@ -11,7 +13,10 @@ class AddressSearchController extends GetxController {
   var selectedService = 'Livraison'.obs;
   var departureAddress = 'Grand Dakar Rue 449'.obs;
   var destinationAddress = 'Adresse du destinataire'.obs;
-  
+  final currentLocation = LatLng(14.716677, -17.467686).obs; // Dakar par défaut
+  final departureLocation = Rxn<LatLng>();
+  final destinationLocation = Rxn<LatLng>();
+  MapController? mapController;
   // Services disponibles
   final List<String> availableServices = [
     'Livraison',
@@ -140,7 +145,23 @@ class AddressSearchController extends GetxController {
       isLoading.value = false;
     }
   }
+// Méthodes à ajouter
+void onMapTap(LatLng point) {
+  currentLocation.value = point;
+  // Logique pour définir départ ou destination selon le contexte
+}
 
+void getCurrentLocation() {
+  // Logique pour obtenir la position GPS actuelle
+}
+
+void zoomIn() {
+  mapController?.move(currentLocation.value, mapController!.camera.zoom + 1);
+}
+
+void zoomOut() {
+  mapController?.move(currentLocation.value, mapController!.camera.zoom - 1);
+}
   @override
   void onClose() {
     departureController.dispose();

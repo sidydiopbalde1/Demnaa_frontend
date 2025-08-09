@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 class DeliveryTrackingController extends GetxController with GetTickerProviderStateMixin {
   // Animation Controllers
   late AnimationController progressController;
@@ -17,7 +18,49 @@ class DeliveryTrackingController extends GetxController with GetTickerProviderSt
   var departure = ''.obs;
   var destination = ''.obs;
   var serviceType = ''.obs;
-  
+  // Variables pour la localisation
+final currentLocation = LatLng(14.716677, -17.467686).obs;
+final departureLocation = Rxn<LatLng>();
+final destinationLocation = Rxn<LatLng>();
+final deliveryPersonLocation = LatLng(14.720000, -17.470000).obs;
+final deliveryStatus = 'En cours de livraison'.obs;
+final speed = '25'.obs;
+MapController? mapController;
+
+// Méthodes
+void centerOnDeliveryPerson() {
+  mapController?.move(deliveryPersonLocation.value, 16.0);
+}
+
+void showFullRoute() {
+  if (departureLocation.value != null && destinationLocation.value != null) {
+    // Calculer les limites pour afficher tout le trajet
+    final bounds = LatLngBounds.fromPoints([
+      departureLocation.value!,
+      destinationLocation.value!,
+      deliveryPersonLocation.value,
+    ]);
+    mapController?.fitCamera(CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(50)));
+  }
+}
+
+void refreshDeliveryLocation() {
+  // Simuler une mise à jour de position
+  // En réalité, ici vous feriez un appel API
+}
+
+Color getStatusColor() {
+  switch (deliveryStatus.value) {
+    case 'En attente':
+      return Colors.orange;
+    case 'En cours de livraison':
+      return Colors.blue;
+    case 'Livré':
+      return Colors.green;
+    default:
+      return Colors.grey;
+  }
+}
   final List<Map<String, dynamic>> transportOptions = [
     {'icon': Icons.motorcycle, 'name': 'Moto', 'isSelected': true},
     {'icon': Icons.directions_car, 'name': 'Voiture', 'isSelected': false},

@@ -844,7 +844,7 @@ Widget _buildCentralNavItem() {
                     ),
                     child: Center(
                       child: Image.asset(
-                        'assets/images/demnaa_pin_logo.png',
+                        'assets/images/demna_icone.png',
                         width: 20,
                         height: 20,
                         errorBuilder: (context, error, stackTrace) {

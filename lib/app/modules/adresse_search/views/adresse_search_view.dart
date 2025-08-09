@@ -1,6 +1,8 @@
 import 'package:demnaa_front/app/modules/adresse_search/controllers/adresse_search_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 
 class AddressSearchView extends GetView<AddressSearchController> {
   const AddressSearchView({super.key});
@@ -15,7 +17,7 @@ class AddressSearchView extends GetView<AddressSearchController> {
             // Header
             _buildHeader(),
             
-            // Map Area
+            // Map Area avec vraie carte
             Expanded(
               flex: 3,
               child: _buildMapArea(),
@@ -42,15 +44,30 @@ class AddressSearchView extends GetView<AddressSearchController> {
           ),
         ],
       ),
-      child: const Center(
-        child: Text(
-          'Recherche adresse',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFF2D3748),
+      child: Row(
+        children: [
+          // Bouton retour
+          IconButton(
+            onPressed: () => Get.back(),
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color: Color(0xFF2D3748),
+            ),
           ),
-        ),
+          const Expanded(
+            child: Center(
+              child: Text(
+                'Recherche adresse',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF2D3748),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 48), // Pour équilibrer le bouton retour
+        ],
       ),
     );
   }
@@ -58,18 +75,83 @@ class AddressSearchView extends GetView<AddressSearchController> {
   Widget _buildMapArea() {
     return Container(
       width: double.infinity,
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Color(0xFFE3F2FD),
-            Color(0xFFE8F5E8),
-          ],
-        ),
-      ),
       child: Stack(
         children: [
+          // Carte OpenStreetMap en arrière-plan
+          Positioned.fill(
+            child: Obx(() => FlutterMap(
+              mapController: controller.mapController,
+              options: MapOptions(
+                initialCenter: controller.currentLocation.value,
+                initialZoom: 15.0,
+                onTap: (tapPosition, point) {
+                  controller.onMapTap(point);
+                },
+                interactionOptions: const InteractionOptions(
+                  enableScrollWheel: true,
+                  enableMultiFingerGestureRace: true,
+                ),
+              ),
+              children: [
+                TileLayer(
+                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  userAgentPackageName: 'com.example.demnaa_front',
+                  maxZoom: 19,
+                ),
+                MarkerLayer(
+                  markers: [
+                    // Marqueur de position actuelle
+                    Marker(
+                      point: controller.currentLocation.value,
+                      width: 40,
+                      height: 40,
+                      child: const Icon(
+                        Icons.location_pin,
+                        color: Colors.red,
+                        size: 40,
+                      ),
+                    ),
+                    // Marqueurs pour départ et destination si définis
+                    if (controller.departureLocation.value != null)
+                      Marker(
+                        point: controller.departureLocation.value!,
+                        width: 35,
+                        height: 35,
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            color: Color(0xFF2E5BBA),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.local_shipping,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                        ),
+                      ),
+                    if (controller.destinationLocation.value != null)
+                      Marker(
+                        point: controller.destinationLocation.value!,
+                        width: 35,
+                        height: 35,
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            color: Color(0xFF059669),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.flag,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ],
+            )),
+          ),
+          
           // Service selector en haut à gauche
           Positioned(
             top: 16,
@@ -77,7 +159,7 @@ class AddressSearchView extends GetView<AddressSearchController> {
             child: Obx(() => Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Colors.white.withOpacity(0.95),
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
@@ -119,41 +201,10 @@ class AddressSearchView extends GetView<AddressSearchController> {
             )),
           ),
           
+        
+          
           // Pin de localisation central
-          Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF2E5BBA),
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.3),
-                        blurRadius: 8,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: const Center(
-                    child: Icon(
-                      Icons.location_on,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                  ),
-                ),
-                Container(
-                  width: 2,
-                  height: 16,
-                  color: const Color(0xFF2E5BBA),
-                ),
-              ],
-            ),
-          ),
+         
         ],
       ),
     );
@@ -177,19 +228,17 @@ class AddressSearchView extends GetView<AddressSearchController> {
         ],
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Départ
           _buildAddressField(
             title: 'Adresse de récupération du colis',
             label: 'Départ',
             controller: controller.departureController,
-            backgroundColor: const Color(0xFFFFF5F5),
-            borderColor: const Color(0xFFFEB2B2),
+            backgroundColor: const Color(0xFFFFFF),
+            borderColor: const Color.fromARGB(255, 39, 49, 187),
             labelColor: const Color(0xFFDC2626),
             subtitle: controller.departureAddress.value,
             subtitleColor: const Color(0xFF059669),
-            dotColor: const Color(0xFF2E5BBA),
           ),
           
           // Ajouter un arrêt
@@ -223,12 +272,11 @@ class AddressSearchView extends GetView<AddressSearchController> {
             title: 'Destination de la livraison',
             label: 'Arriver',
             controller: controller.destinationController,
-            backgroundColor: const Color(0xFFF9FAFB),
-            borderColor: const Color(0xFFD1D5DB),
+            backgroundColor: const Color(0xFFFFFF),
+            borderColor: const Color(0xFF059669),
             labelColor: const Color(0xFF059669),
             subtitle: controller.destinationAddress.value,
             subtitleColor: const Color(0xFF059669),
-            dotColor: const Color(0xFFDC2626),
             placeholder: 'Téléphone',
           ),
           
@@ -290,7 +338,6 @@ class AddressSearchView extends GetView<AddressSearchController> {
     required Color labelColor,
     required String subtitle,
     required Color subtitleColor,
-    required Color dotColor,
     String? placeholder,
   }) {
     return Column(
@@ -301,8 +348,7 @@ class AddressSearchView extends GetView<AddressSearchController> {
             Container(
               width: 12,
               height: 12,
-              decoration: BoxDecoration(
-                color: dotColor,
+              decoration: const BoxDecoration(
                 shape: BoxShape.circle,
               ),
             ),
@@ -366,19 +412,19 @@ class AddressSearchView extends GetView<AddressSearchController> {
               ),
               Row(
                 children: [
+                  const SizedBox(width: 4),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      backgroundColor: Color.fromARGB(255, 115, 226, 191),
+                    ),
+                  ),
                   Icon(
                     Icons.location_on,
                     color: subtitleColor,
                     size: 14,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    subtitle,
-                    style: TextStyle(
-                      color: subtitleColor,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                    ),
                   ),
                 ],
               ),
