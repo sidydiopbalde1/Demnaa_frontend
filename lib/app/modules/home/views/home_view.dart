@@ -6,6 +6,37 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/home_controller.dart';
 
+// 🎨 PAINTER POUR LA FORME DE PIN
+class PinPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = const Color(0xFF2E5BBA)
+      ..style = PaintingStyle.fill;
+
+    final path = Path();
+    
+    // Dessiner le cercle du pin
+    path.addOval(Rect.fromCircle(
+      center: Offset(size.width / 2, size.height / 2 - 7),
+      radius: 25,
+    ));
+    
+    // Dessiner la pointe du pin
+    path.moveTo(size.width / 2, size.height - 5);
+    path.lineTo(size.width / 2 - 10, size.height / 2 + 8);
+    path.lineTo(size.width / 2 + 10, size.height / 2 + 8);
+    path.close();
+
+    canvas.drawPath(path, paint);
+    
+    // Ombre
+    canvas.drawShadow(path, Colors.black.withOpacity(0.3), 8, false);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
 
@@ -416,55 +447,71 @@ Widget _buildHeader() {
     );
   }
 
-  Widget _buildFavoritesSection() {
-    return AnimatedBuilder(
-      animation: controller.favoritesAnimationController,
-      builder: (context, child) {
-        return Opacity(
-          opacity: controller.favoritesFadeAnimation.value,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 25),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Lieux favoris',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF2D3748),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                
-                Obx(() {
-                  final places = controller.favoritePlaceController.favoritePlaces;
-                  final displayedPlaces = places.take(3).toList();
-                  
-                  return SizedBox(
-                    height: 100,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      padding: EdgeInsets.zero,
-                      itemCount: displayedPlaces.length + 1,
-                      itemBuilder: (context, index) {
-                        if (index == displayedPlaces.length) {
-                          return _buildAddFavoriteButton();
-                        }
-                        
-                        final place = displayedPlaces[index];
-                        return _buildFavoriteItemDynamic(place, index);
-                      },
+ Widget _buildFavoritesSection() {
+  return AnimatedBuilder(
+    animation: controller.favoritesAnimationController,
+    builder: (context, child) {
+      return Opacity(
+        opacity: controller.favoritesFadeAnimation.value,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Lieux favoris',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
                     ),
-                  );
-                }),
-              ],
-            ),
+                  ),
+                  TextButton(
+                    onPressed: () => _showAllFavoriteS(),
+                    child: const Text(
+                      'Voir tout',
+                      style: TextStyle(
+                        color: Color(0xFF4A90E2),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 15),
+              
+              // 🔧 CORRECTION : Augmentation de la hauteur et amélioration de la disposition
+              Obx(() {
+                final places = controller.favoritePlaceController.favoritePlaces;
+                final displayedPlaces = places.take(3).toList();
+                
+                return SizedBox(
+                  height: 120, // ✅ Augmenté de 100 à 120
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    padding: EdgeInsets.zero, // ✅ Supprime le padding par défaut
+                    itemCount: displayedPlaces.length + 1,
+                    itemBuilder: (context, index) {
+                      if (index == displayedPlaces.length) {
+                        return _buildAddFavoriteButton();
+                      }
+                      
+                      final place = displayedPlaces[index];
+                      return _buildFavoriteItemDynamic(place, index);
+                    },
+                  ),
+                );
+              }),
+            ],
           ),
-        );
-      },
-    );
-  }
+        ),
+      );
+    },
+  );
+}
 
   Widget _buildFavoriteItemDynamic(FavoritePlace place, int index) {
     return GestureDetector(
@@ -745,7 +792,7 @@ Widget _buildBonusSection() {
           children: [
             Icon(
               icon,
-              color: isSelected ? const Color(0xFF2E5BBA) : const Color(0xFF9CA3AF),
+              color:  const Color(0xFF2E5BBA),
               size: 24,
             ),
             const SizedBox(height: 6),
@@ -753,7 +800,7 @@ Widget _buildBonusSection() {
               label,
               style: TextStyle(
                 fontSize: 12,
-                color: isSelected ? const Color(0xFF2E5BBA) : const Color(0xFF9CA3AF),
+                color:  const Color(0xFF2E5BBA),
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -764,89 +811,75 @@ Widget _buildBonusSection() {
   }
 
   // 🎯 BOUTON CENTRAL AVEC LOGO DEMNAA
-  Widget _buildCentralNavItem() {
-    final isSelected = controller.selectedBottomIndex.value == 1;
-    
-    return GestureDetector(
-      onTap: () => controller.changeBottomNavIndex(1),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Logo DemNaa exactement comme l'image
-            Container(
-              width: 45,
-              height: 45,
-              decoration: BoxDecoration(
-                color: const Color(0xFF2E5BBA),
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: isSelected ? [
-                  BoxShadow(
-                    color: const Color(0xFF2E5BBA).withOpacity(0.3),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ] : null,
-              ),
-              child: Stack(
-                children: [
-                  // Logo "D" stylisé
-                  Center(
-                    child: Container(
-                      width: 35,
-                      height: 35,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(8),
+// 🎯 VERSION AVEC CUSTOM PAINTER
+Widget _buildCentralNavItem() {
+  final isSelected = controller.selectedBottomIndex.value == 1;
+  
+  return GestureDetector(
+    onTap: () => controller.changeBottomNavIndex(1),
+    child: Container(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // 📍 PIN PERSONNALISÉ
+          Container(
+            width: 50,
+            height: 65,
+            child: CustomPaint(
+              painter: PinPainter(),
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 15),
+                  child: Container(
+                    width: 34,
+                    height: 34,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: const Color(0xFF10B981),
+                        width: 2,
                       ),
-                      child: const Center(
-                        child: Text(
-                          'D',
-                          style: TextStyle(
-                            color: Color(0xFF2E5BBA),
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                    ),
+                    child: Center(
+                      child: Image.asset(
+                        'assets/images/demnaa_pin_logo.png',
+                        width: 20,
+                        height: 20,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Text(
+                            'D',
+                            style: TextStyle(
+                              color: Color(0xFF2E5BBA),
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          );
+                        },
                       ),
                     ),
                   ),
-                  // Pin vert (petite icône de localisation)
-                  Positioned(
-                    right: 2,
-                    top: 2,
-                    child: Container(
-                      width: 12,
-                      height: 12,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFF10B981),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.location_on,
-                        color: Colors.white,
-                        size: 8,
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
-            const SizedBox(height: 4),
-            Text(
-              'DemNaa',
-              style: TextStyle(
-                fontSize: 12,
-                color: isSelected ? const Color(0xFF2E5BBA) : const Color(0xFF2E5BBA),
-                fontWeight: FontWeight.w700,
-              ),
+          ),
+          
+          Text(
+            'DemNaa',
+            style: TextStyle(
+              fontSize: 12,
+              color: const Color(0xFF2E5BBA),
+              fontWeight: FontWeight.w700,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
+
+
 
 
 
