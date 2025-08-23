@@ -55,40 +55,37 @@ class DriversView extends GetView<DriversController> {
 
   Widget _buildCenterSection() {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 40),
+      padding: const EdgeInsets.symmetric(vertical: 30),
       child: Column(
         children: [
-          // Icône centrale
+          // Icône centrale avec design original
           Container(
             width: 120,
             height: 120,
             decoration: BoxDecoration(
-              color: const Color(0xFF10B981).withOpacity(0.1),
+              color: const Color(0xFFB8E6D3), // Vert clair
               shape: BoxShape.circle,
-              border: Border.all(
-                color: const Color(0xFF10B981).withOpacity(0.2),
-                width: 3,
-              ),
             ),
             child: Stack(
               children: [
+                // Icône de pin/localisation
                 Center(
                   child: Container(
-                    width: 60,
-                    height: 60,
+                    width: 50,
+                    height: 50,
                     decoration: const BoxDecoration(
                       color: Color(0xFF10B981),
                       borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(8),
-                        topRight: Radius.circular(8),
-                        bottomLeft: Radius.circular(20),
-                        bottomRight: Radius.circular(8),
+                        topLeft: Radius.circular(25),
+                        topRight: Radius.circular(25),
+                        bottomLeft: Radius.circular(25),
+                        bottomRight: Radius.circular(4),
                       ),
                     ),
                     child: const Icon(
                       Icons.location_on,
                       color: Colors.white,
-                      size: 30,
+                      size: 24,
                     ),
                   ),
                 ),
@@ -96,14 +93,14 @@ class DriversView extends GetView<DriversController> {
             ),
           ),
           
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
           
           // Texte descriptif
           const Text(
             'Vous n\'avez pas encore de conducteur.',
             style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
               color: Color(0xFF1F2937),
             ),
             textAlign: TextAlign.center,
@@ -114,9 +111,9 @@ class DriversView extends GetView<DriversController> {
           const Text(
             'Ajoutez un conducteur pour\ncommencer à gérer vos trajets plus\nfacilement !',
             style: TextStyle(
-              fontSize: 14,
+              fontSize: 13,
               color: Color(0xFF6B7280),
-              height: 1.5,
+              height: 1.4,
             ),
             textAlign: TextAlign.center,
           ),
@@ -307,7 +304,7 @@ class DriversView extends GetView<DriversController> {
 
   Widget _buildAddButton() {
     return Padding(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(16),
       child: SizedBox(
         width: double.infinity,
         child: ElevatedButton(
@@ -315,16 +312,16 @@ class DriversView extends GetView<DriversController> {
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFF10B981),
             foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 16),
+            padding: const EdgeInsets.symmetric(vertical: 14),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(25),
             ),
             elevation: 0,
           ),
           child: const Text(
             'Ajout un conducteur',
             style: TextStyle(
-              fontSize: 16,
+              fontSize: 15,
               fontWeight: FontWeight.w600,
             ),
           ),

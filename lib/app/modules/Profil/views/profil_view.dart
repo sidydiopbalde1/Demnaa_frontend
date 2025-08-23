@@ -42,13 +42,15 @@ class ProfilView extends GetView<ProfilController> {
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
+            const SizedBox(height: 20),
+            
             // Avatar
             _buildAvatar(),
             
-            const SizedBox(height: 40),
+            const SizedBox(height: 32),
             
             // Formulaire
             _buildForm(),
@@ -62,27 +64,23 @@ class ProfilView extends GetView<ProfilController> {
     return Column(
       children: [
         Container(
-          width: 120,
-          height: 120,
+          width: 100,
+          height: 100,
           decoration: BoxDecoration(
-            color: const Color(0xFF10B981).withOpacity(0.1),
+            color: const Color(0xFFB8E6D3), // Vert clair comme dans l'image
             shape: BoxShape.circle,
-            border: Border.all(
-              color: const Color(0xFF10B981).withOpacity(0.2),
-              width: 3,
-            ),
           ),
           child: const Icon(
             Icons.person,
             color: Color(0xFF10B981),
-            size: 60,
+            size: 50,
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 12),
         Obx(() => Text(
           '${controller.firstName.value} ${controller.lastName.value}',
           style: const TextStyle(
-            fontSize: 20,
+            fontSize: 18,
             fontWeight: FontWeight.w600,
             color: Color(0xFF1F2937),
           ),
@@ -174,31 +172,24 @@ class ProfilView extends GetView<ProfilController> {
         Obx(() => Container(
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(8),
             border: Border.all(
               color: isEditing.value 
                   ? const Color(0xFF10B981) 
                   : Colors.grey[300]!,
             ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 10,
-                offset: const Offset(0, 2),
-              ),
-            ],
           ),
           child: TextFormField(
             controller: controller,
             enabled: isEditing.value,
             keyboardType: keyboardType,
             style: const TextStyle(
-              fontSize: 16,
+              fontSize: 15,
               color: Color(0xFF1F2937),
             ),
             decoration: InputDecoration(
               border: InputBorder.none,
-              contentPadding: const EdgeInsets.all(16),
+              contentPadding: const EdgeInsets.all(12),
               suffixIcon: suffixIcon != null
                   ? Icon(
                       suffixIcon,
