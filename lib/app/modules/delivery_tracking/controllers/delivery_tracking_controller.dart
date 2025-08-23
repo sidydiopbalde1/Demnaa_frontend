@@ -132,14 +132,14 @@ Color getStatusColor() {
       // Simulation d'appel API
       await Future.delayed(const Duration(seconds: 2));
       
-      Get.snackbar(
-        'Course validée',
-        'Votre ${transportOptions[selectedTransport.value]['name'].toLowerCase()} arrive dans ${arrivalTime.value} minutes',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green.withOpacity(0.8),
-        colorText: Colors.white,
-        duration: const Duration(seconds: 3),
-      );
+      // Get.snackbar(
+      //   'Course validée',
+      //   'Votre ${transportOptions[selectedTransport.value]['name'].toLowerCase()} arrive dans ${arrivalTime.value} minutes',
+      //   snackPosition: SnackPosition.BOTTOM,
+      //   backgroundColor: Colors.green.withOpacity(0.8),
+      //   colorText: Colors.white,
+      //   duration: const Duration(seconds: 3),
+      // );
       
       // Naviguer vers l'écran de destination ou de suivi
       Get.toNamed('/destination', arguments: {

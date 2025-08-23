@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
 import '../controllers/delivery_tracking_controller.dart';
 
 class DeliveryTrackingView extends GetView<DeliveryTrackingController> {
@@ -180,7 +179,7 @@ class DeliveryTrackingView extends GetView<DeliveryTrackingController> {
     );
   }
 
-  Widget _buildCourseInfoSection() {
+   Widget _buildCourseInfoSection() {
     return Container(
       decoration: const BoxDecoration(
         color: Colors.white,
@@ -220,19 +219,19 @@ class DeliveryTrackingView extends GetView<DeliveryTrackingController> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     _buildTransportIcon(
-                      imagePath: 'assets/images/demnaa_livraison_moto.png',
+                      imagePath: 'assets/images/moto1.png',
                       fallbackIcon: Icons.motorcycle,
                       backgroundColor: const Color(0xFF10B981),
                     ),
                     const SizedBox(width: 12),
                     _buildTransportIcon(
-                      imagePath: 'assets/images/demna_moto_taxi.png',
+                      imagePath: 'assets/images/moto2.png',
                       fallbackIcon: Icons.motorcycle,
                       backgroundColor: const Color(0xFF3B82F6),
                     ),
                     const SizedBox(width: 12),
                     _buildTransportIcon(
-                      imagePath: 'assets/images/demnaa_moto_sante.png',
+                      imagePath: 'assets/images/truck.png',
                       fallbackIcon: Icons.local_shipping,
                       backgroundColor: const Color(0xFF6366F1),
                     ),
@@ -279,30 +278,15 @@ class DeliveryTrackingView extends GetView<DeliveryTrackingController> {
                 )),
                 const SizedBox(height: 16),
                 
-                // Progress Bar sous le prix
+                // Progress Bar sous le prix - maintenant totalement remplie
                 Container(
                   width: double.infinity,
-                  height: 4,
+                  height: 6, // Augmenté de 4 à 6
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE5E7EB),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                  child: AnimatedBuilder(
-                    animation: controller.progressAnimation,
-                    builder: (context, child) {
-                      return FractionallySizedBox(
-                        alignment: Alignment.centerLeft,
-                        widthFactor: controller.progressAnimation.value,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFF10B981), Color(0xFF3B82F6)],
-                            ),
-                            borderRadius: BorderRadius.circular(2),
-                          ),
-                        ),
-                      );
-                    },
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF10B981), Color(0xFF3B82F6)],
+                    ),
+                    borderRadius: BorderRadius.circular(3),
                   ),
                 ),
               ],
@@ -351,18 +335,7 @@ class DeliveryTrackingView extends GetView<DeliveryTrackingController> {
                 )),
                 
                 const SizedBox(height: 12),
-                
-                // Cancel Button
-                TextButton(
-                  onPressed: controller.cancelCourse,
-                  child: const Text(
-                    'Annuler la course',
-                    style: TextStyle(
-                      color: Color(0xFF6B7280),
-                      fontSize: 14,
-                    ),
-                  ),
-                ),
+            
               ],
             ),
           ),

@@ -1,8 +1,14 @@
-import 'package:demnaa_front/app/modules/adresse_search/bindings/adresse_search_binding.dart';
+import 'package:demnaa_front/app/modules/Drivers/views/drivers_list_view.dart';
 import 'package:get/get.dart';
 
-// import '../modules/adresse_search/bindings/adresse_search_binding.dart';
-// import '../modules/adresse_search/views/adresse_search_view.dart';
+import '../modules/Account/bindings/account_binding.dart';
+import '../modules/Account/views/account_view.dart';
+import '../modules/Drivers/bindings/drivers_binding.dart';
+import '../modules/Drivers/views/drivers_view.dart';
+import '../modules/Profil/bindings/profil_binding.dart';
+import '../modules/Profil/views/profil_view.dart';
+import '../modules/adresse_search/bindings/adresse_search_binding.dart';
+import '../modules/adresse_search/views/adresse_search_view.dart';
 import '../modules/commande/bindings/commande_binding.dart';
 import '../modules/commande/views/commande_view.dart';
 import '../modules/create_favorite_place/bindings/create_favorite_place_binding.dart';
@@ -19,7 +25,9 @@ import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/reverse_geocoding/bindings/reverse_geocoding_binding.dart';
 import '../modules/reverse_geocoding/views/reverse_geocoding_view.dart';
-import 'package:demnaa_front/app/modules/adresse_search/views/adresse_search_view.dart';
+
+// import '../modules/adresse_search/bindings/adresse_search_binding.dart';
+// import '../modules/adresse_search/views/adresse_search_view.dart';
 
 part 'app_routes.dart';
 
@@ -74,5 +82,73 @@ class AppPages {
       page: () => const DestinationView(),
       binding: DestinationBinding(),
     ),
+    GetPage(
+      name: _Paths.ACCOUNT,
+      page: () => const AccountView(),
+      binding: AccountBinding(),
+    ),
+    GetPage(
+      name: _Paths.PROFIL,
+      page: () => const ProfilView(),
+      binding: ProfilBinding(),
+    ),
+    GetPage(
+      name: _Paths.DRIVERS,
+      page: () => const DriversView(),
+      binding: DriversBinding(),
+    ),
+    // Nouvelles pages ajoutées
+    GetPage(
+      name: _Paths.ACCOUNT,
+      page: () => const AccountView(),
+      binding: AccountBinding(),
+    ),
+    GetPage(
+      name: _Paths.PROFIL,
+      page: () => const ProfilView(),
+      binding: ProfilBinding(),
+    ),
+    GetPage(
+      name: _Paths.DRIVERS,
+      page: () => const DriversView(),
+      binding: DriversBinding(),
+    ),
+    GetPage(
+      name: _Paths.DRIVERS_LIST,
+      page: () => const DriversListView(),
+      binding: DriversBinding(),
+     ),
+
+    // // Pages à créer selon vos besoins
+    // GetPage(
+    //   name: _Paths.MODIFY_NUMBER,
+    //   page: () => const ModifyNumberView(), // À créer
+    //   binding: AccountBinding(),
+    // ),
+    // GetPage(
+    //   name: _Paths.BECOME_DRIVER,
+    //   page: () => const BecomeDriverView(), // À créer
+    //   binding: AccountBinding(),
+    // ),
+    // GetPage(
+    //   name: _Paths.BECOME_OWNER,
+    //   page: () => const BecomeOwnerView(), // À créer
+    //   binding: AccountBinding(),
+    // ),
+    // GetPage(
+    //   name: _Paths.SETTINGS,
+    //   page: () => const SettingsView(), // À créer
+    //   binding: AccountBinding(),
+    // ),
+    // GetPage(
+    //   name: _Paths.INFORMATIONS,
+    //   page: () => const InformationsView(), // À créer
+    //   binding: AccountBinding(),
+    // ),
+    // GetPage(
+    //   name: _Paths.ADD_DRIVER,
+    //   page: () => const AddDriverView(), // À créer
+    //   binding: DriversBinding(),
+    // ),
   ];
 }

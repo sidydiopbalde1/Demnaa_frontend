@@ -64,14 +64,14 @@ class DestinationController extends GetxController with GetTickerProviderStateMi
   void _driverAccepted() {
     isWaitingResponse.value = false;
     
-    Get.snackbar(
-      'Conducteur trouvé !',
-      'Un conducteur a accepté votre course',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.green.withOpacity(0.8),
-      colorText: Colors.white,
-      duration: const Duration(seconds: 3),
-    );
+    // Get.snackbar(
+    //   'Conducteur trouvé !',
+    //   'Un conducteur a accepté votre course',
+    //   snackPosition: SnackPosition.BOTTOM,
+    //   backgroundColor: Colors.green.withOpacity(0.8),
+    //   colorText: Colors.white,
+    //   duration: const Duration(seconds: 3),
+    // );
     
     // Naviguer vers l'écran de suivi final
     Future.delayed(const Duration(seconds: 2), () {

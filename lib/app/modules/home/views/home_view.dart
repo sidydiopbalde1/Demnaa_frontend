@@ -312,123 +312,116 @@ Widget _buildHeader() {
   );
 }
 
-  Widget _buildServiceCard(ServiceModel service, int index) {
-    return TweenAnimationBuilder<double>(
-      duration: Duration(milliseconds: 600 + (index * 200)),
-      tween: Tween(begin: 0.0, end: 1.0),
-      curve: Curves.elasticOut,
-      builder: (context, value, child) {
-        return Transform.scale(
-          scale: value,
-          child: GestureDetector(
-            onTap: () => controller.onServiceTap(service),
-            child: Container(
-              width: 100,
-              height: 100,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, 5),
-                  ),
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(15),
-                child: Stack(
-                  children: [
-                    // 🖼️ IMAGE D'ARRIÈRE-PLAN qui couvre toute la carte
-                    if (service.photo.isNotEmpty && service.photo != 'https://via.placeholder.com/150')
-                      Positioned.fill(
-                        child: Image.network(
-                          service.photo,
-                          fit: BoxFit.cover, // ✅ Couvre toute la carte
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              decoration: BoxDecoration(
-                                gradient: service.gradient,
-                              ),
-                            );
-                          },
-                        ),
-                      )
-                    else
-                      // 🎨 DÉGRADÉ si pas d'image
-                      Positioned.fill(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            gradient: service.gradient,
-                          ),
-                        ),
+Widget _buildServiceCard(ServiceModel service, int index) {
+  return TweenAnimationBuilder<double>(
+    duration: Duration(milliseconds: 600 + (index * 200)),
+    tween: Tween(begin: 0.0, end: 1.0),
+    curve: Curves.elasticOut,
+    builder: (context, value, child) {
+      return Transform.scale(
+        scale: value,
+        child: GestureDetector(
+          onTap: () => controller.onServiceTap(service),
+          child: Container(
+            width: 100,
+            height: 100,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 10,
+                  offset: const Offset(0, 5),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(15),
+              child: Stack(
+                children: [
+                  // 🖼️ IMAGE D'ARRIÈRE-PLAN qui couvre toute la carte
+                  if (service.photo.isNotEmpty && service.photo != 'https://via.placeholder.com/150')
+                    Positioned.fill(
+                      child: Image.network(
+                        service.photo,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            decoration: BoxDecoration(
+                              gradient: service.gradient,
+                            ),
+                          );
+                        },
                       ),
-                    
-                    // 🌫️ OVERLAY dégradé pour améliorer la lisibilité
+                    )
+                  else
+                    // 🎨 DÉGRADÉ si pas d'image
                     Positioned.fill(
                       child: Container(
                         decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Colors.black.withOpacity(0.1),
-                              Colors.black.withOpacity(0.4),
-                            ],
-                          ),
+                          gradient: service.gradient,
                         ),
                       ),
                     ),
-                    
-                    // 📝 CONTENU (icône + texte) par-dessus
+                  
+                  // 🎯 ICÔNE CENTRÉE (uniquement si pas d'image)
+                  if (service.photo.isEmpty || service.photo == 'https://via.placeholder.com/150')
                     Positioned.fill(
-                      child: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            // Icône uniquement si pas d'image ou en cas d'erreur
-                            if (service.photo.isEmpty || service.photo == 'https://via.placeholder.com/150')
-                              Icon(
-                                service.icon,
-                                color: Colors.white,
-                                size: 30,
-                              ),
-                            
-                            const SizedBox(height: 8),
-                            
-                            // Texte avec ombre pour meilleure lisibilité
-                            Text(
-                              service.displayName,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700,
-                                shadows: [
-                                  Shadow(
-                                    offset: const Offset(0, 1),
-                                    blurRadius: 2,
-                                    color: Colors.black.withOpacity(0.5),
-                                  ),
-                                ],
-                              ),
-                              textAlign: TextAlign.center,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                      child: Center(
+                        child: Icon(
+                          service.icon,
+                          color: Colors.white,
+                          size: 35,
+                        ),
+                      ),
+                    ),
+                  
+                  // 📝 LIBELLÉ EN BAS avec fond semi-transparent
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.transparent,
+                            Colors.black.withOpacity(0.7),
                           ],
                         ),
+                        borderRadius: const BorderRadius.only(
+                          bottomLeft: Radius.circular(15),
+                          bottomRight: Radius.circular(15),
+                        ),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 12,
+                      ),
+                      child: Text(
+                        service.displayName,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        textAlign: TextAlign.center,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
-        );
-      },
-    );
-  }
+        ),
+      );
+    },
+  );
+}
 
   Widget _buildServiceCardSkeleton() {
     return Container(
@@ -780,97 +773,46 @@ Widget _buildBonusSection() {
   }
 
   // Item de navigation standard (côtés)
-  Widget _buildNavItem(IconData icon, String label, int index) {
-    final isSelected = controller.selectedBottomIndex.value == index;
-    
-    return GestureDetector(
-      onTap: () => controller.changeBottomNavIndex(index),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              color:  const Color(0xFF2E5BBA),
-              size: 24,
-            ),
-            const SizedBox(height: 6),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 12,
-                color:  const Color(0xFF2E5BBA),
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // 🎯 BOUTON CENTRAL AVEC LOGO DEMNAA
-// 🎯 VERSION AVEC CUSTOM PAINTER
-Widget _buildCentralNavItem() {
-  final isSelected = controller.selectedBottomIndex.value == 1;
+Widget _buildNavItem(IconData icon, String label, int index) {
+  final isSelected = controller.selectedBottomIndex.value == index;
   
   return GestureDetector(
-    onTap: () => controller.changeBottomNavIndex(1),
+    onTap: () {
+      controller.selectedBottomIndex.value = index;
+      
+      // Navigation selon l'index
+      switch (index) {
+        case 0:
+          // Historique - vous pouvez implémenter cette route plus tard
+          // Get.toNamed(Routes.HISTORY);
+          print('Navigation vers Historique');
+          break;
+        case 1:
+          // DemNaa (Home) - pas de navigation nécessaire
+          break;
+        case 2:
+          // Mon Compte - navigation vers AccountView
+          Get.toNamed('/account');
+          break;
+      }
+    },
     child: Container(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // 📍 PIN PERSONNALISÉ
-          Container(
-            width: 50,
-            height: 65,
-            child: CustomPaint(
-              painter: PinPainter(),
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 15),
-                  child: Container(
-                    width: 34,
-                    height: 34,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: const Color(0xFF10B981),
-                        width: 2,
-                      ),
-                    ),
-                    child: Center(
-                      child: Image.asset(
-                        'assets/images/demna_icone.png',
-                        width: 20,
-                        height: 20,
-                        errorBuilder: (context, error, stackTrace) {
-                          return const Text(
-                            'D',
-                            style: TextStyle(
-                              color: Color(0xFF2E5BBA),
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
+          Icon(
+            icon,
+            color: const Color(0xFF2E5BBA),
+            size: 24,
           ),
-          
+          const SizedBox(height: 6),
           Text(
-            'DemNaa',
-            style: TextStyle(
+            label,
+            style: const TextStyle(
               fontSize: 12,
-              color: const Color(0xFF2E5BBA),
-              fontWeight: FontWeight.w700,
+              color: Color(0xFF2E5BBA),
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],
@@ -878,6 +820,70 @@ Widget _buildCentralNavItem() {
     ),
   );
 }
+
+  // 🎯 BOUTON CENTRAL AVEC LOGO DEMNAA
+// 🎯 VERSION AVEC CUSTOM PAINTER
+Widget _buildCentralNavItem() {
+  final isSelected = controller.selectedBottomIndex.value == 1;
+
+return Positioned(
+  top: -25, // remonte au-dessus de la barre
+  left: MediaQuery.of(Get.context!).size.width / 2 - 45,
+  child: GestureDetector(
+    onTap: () => controller.changeBottomNavIndex(1),
+    child: Container(
+      height: 90,
+      width: 90,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(30),
+          topRight: Radius.circular(30),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.15),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 50,
+            height: 50,
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+            ),
+            child: Center(
+              child: Image.asset(
+                'assets/images/demna_icone.png',
+                width: 40,
+                height: 40,
+              ),
+            ),
+          ),
+          const SizedBox(height: 4),
+          const Text(
+            'DemNaa',
+            style: TextStyle(
+              fontSize: 12,
+              color: Color(0xFF2E5BBA),
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    ),
+  ),
+);
+
+}
+
+
 
 
 
