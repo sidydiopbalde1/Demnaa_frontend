@@ -2,7 +2,7 @@ import 'package:demnaa_front/app/modules/adresse_search/controllers/adresse_sear
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
+// import 'package:latlong2/latlong.dart';
 
 class AddressSearchView extends GetView<AddressSearchController> {
   const AddressSearchView({super.key});
@@ -10,21 +10,24 @@ class AddressSearchView extends GetView<AddressSearchController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      // backgroundColor: Colors.grey[50],
+      
       body: SafeArea(
         child: Column(
           children: [
-            // Header
-            _buildHeader(),
+           
+            // _buildHeader(),
             
             // Map Area avec vraie carte
             Expanded(
               flex: 3,
               child: _buildMapArea(),
             ),
+           
+            // Header
             
             // Address Input Section
-            _buildAddressSection(),
+             _buildAddressSection(),
           ],
         ),
       ),
@@ -34,16 +37,7 @@ class AddressSearchView extends GetView<AddressSearchController> {
   Widget _buildHeader() {
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 4,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
+      
       child: Row(
         children: [
           // Bouton retour
@@ -51,21 +45,10 @@ class AddressSearchView extends GetView<AddressSearchController> {
             onPressed: () => Get.back(),
             icon: const Icon(
               Icons.arrow_back_ios,
-              color: Color(0xFF2D3748),
+              color: Color.fromARGB(255, 27, 93, 207),
             ),
           ),
-          const Expanded(
-            child: Center(
-              child: Text(
-                'Recherche adresse',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF2D3748),
-                ),
-              ),
-            ),
-          ),
+          
           const SizedBox(width: 48), // Pour équilibrer le bouton retour
         ],
       ),
@@ -152,7 +135,7 @@ class AddressSearchView extends GetView<AddressSearchController> {
             )),
           ),
           
-          // Overlays profil utilisateur et service
+          // Overlays profil utilisateur et services
           Positioned(
             top: 16,
             left: 16,
@@ -161,121 +144,14 @@ class AddressSearchView extends GetView<AddressSearchController> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 // Profil utilisateur à gauche
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    children: [
-                      // Photo de profil
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        child: Container(
-                          width: 60,
-                          height: 60,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(color: const Color(0xFF2E5BBA), width: 3),
-                          ),
-                          child: ClipOval(
-                            child: Image.asset(
-                              'assets/images/user_map_icone.png',
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Container(
-                                  color: const Color(0xFF2E5BBA),
-                                  child: const Icon(
-                                    Icons.person,
-                                    color: Colors.white,
-                                    size: 30,
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                      ),
-                      // Nom de l'utilisateur
-                      Container(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: const Column(
-                          children: [
-                            Text(
-                              'Demnaa',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                color: Color(0xFF2E5BBA),
-                              ),
-                            ),
-                            Text(
-                              'Déme',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                color: Color(0xFF2E5BBA),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                Obx(() => controller.comesFromDriversList.value 
+                ? _buildUserProfile()
+                : const SizedBox.shrink()),
                 
-                // Service Livraison à droite
-                Obx(() => Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.95),
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Icône du service
-                      Container(
-                        width: 32,
-                        height: 32,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF2E5BBA),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: const Center(
-                          child: Icon(
-                            Icons.delivery_dining,
-                            color: Colors.white,
-                            size: 18,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      // Texte du service
-                      Text(
-                        controller.selectedService.value,
-                        style: const TextStyle(
-                          color: Color(0xFF2E5BBA),
-                          fontWeight: FontWeight.w700,
-                          fontSize: 18,
-                        ),
-                      ),
-                    ],
-                  ),
-                )),
+                // Services à droite - Conditionnellement affichés
+                Obx(() => controller.showServicesOnMap.value 
+                  ? _buildServicesSelector()
+                  : _buildSingleService()),
               ],
             ),
           ),
@@ -283,252 +159,196 @@ class AddressSearchView extends GetView<AddressSearchController> {
       ),
     );
   }
-   Widget _buildAddressField({
-    required String title,
-    required String label,
-    required TextEditingController controller,
-    required Color backgroundColor,
-    required Color borderColor,
-    required Color labelColor,
-    required String subtitle,
-    required Color subtitleColor,
-    String? placeholder,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Container(
-              width: 12,
-              height: 12,
-              decoration: const BoxDecoration(
+
+  Widget _buildUserProfile() {
+    return Container(
+      
+      child: Column(
+        children: [
+          // Photo de profil
+          Container(
+            padding: const EdgeInsets.all(12),
+            child: Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
+                border: Border.all(color: const Color(0xFF2E5BBA), width: 3),
+              ),
+              child: ClipOval(
+                child: Image.asset(
+                  'assets/images/user_map_icone.png',
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      color: const Color(0xFF2E5BBA),
+                      child: const Icon(
+                        Icons.person,
+                        color: Colors.white,
+                        size: 30,
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
-            const SizedBox(width: 12),
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFF6B7280),
-              ),
+          ),
+          // Nom de l'utilisateur
+          Container(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: const Column(
+              children: [
+                Text(
+                  'Demnaa',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF2E5BBA),
+                  ),
+                ),
+                Text(
+                  'Déme',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF2E5BBA),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: backgroundColor,
-            border: Border.all(color: borderColor),
-            borderRadius: BorderRadius.circular(12),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    label,
-                    style: TextStyle(
-                      color: labelColor,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      _buildIconButton(Icons.home_outlined, 'home'),
-                      _buildIconButton(Icons.access_time, 'history'),
-                      _buildIconButton(Icons.location_on_outlined, 'location'),
-                      _buildIconButton(Icons.navigation_outlined, 'favorites'),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-
-            SizedBox(
-  width: 200, // largeur réduite ici
-  child: TextFormField(
-    controller: controller,
-    decoration: InputDecoration(
-      hintText: placeholder,
-      hintStyle: const TextStyle(
-        color: Color(0xFF9CA3AF),
+        ],
       ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: borderColor),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: borderColor, width: 2),
-      ),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-      isDense: true,
-    ),
-    style: const TextStyle(
-      color: Color(0xFF1F2937),
-      fontWeight: FontWeight.w500,
-    ),
-  ),
-),
-
-              Row(
-                children: [
-                  const SizedBox(width: 4),
-                  Text(
-                    subtitle,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      backgroundColor: Color.fromARGB(255, 115, 226, 191),
-                    ),
-                  ),
-                  Icon(
-                    Icons.location_on,
-                    color: subtitleColor,
-                    size: 14,
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 16),
-      ],
     );
   }
 
+  // Sélecteur de services multiples (quand on vient de HomeView)
+Widget _buildServicesSelector() {
+  return Container(
+    height: 60,
+    child: Column(
+      children: [
+        // Bouton retour centré en haut
+        Center(
+          child: IconButton(
+            icon: Icon(
+              Icons.arrow_back_ios,
+              size: 18,
+              color: Color.fromARGB(255, 27, 93, 207),
+            ),
+            onPressed: () => Get.back(),
+          ),
+        ),
+        
+        const SizedBox(height: 8), // Espace entre bouton et services
 
-  // Widget _buildAddressSection() {
-  //   return Container(
-  //     padding: const EdgeInsets.all(20),
-  //     decoration: const BoxDecoration(
-  //       color: Colors.white,
-  //       borderRadius: BorderRadius.only(
-  //         topLeft: Radius.circular(20),
-  //         topRight: Radius.circular(20),
-  //       ),
-  //       boxShadow: [
-  //         BoxShadow(
-  //           color: Colors.black12,
-  //           blurRadius: 10,
-  //           offset: Offset(0, -2),
-  //         ),
-  //       ],
-  //     ),
-  //     child: Column(
-  //       children: [
-  //         // Départ avec autocomplétion
-  //         _buildAddressFieldWithAutocomplete(
-  //           title: 'Adresse de récupération du colis',
-  //           label: 'Départ',
-  //           controller: controller.departureController,
-  //           backgroundColor: const Color(0xFFFFFF),
-  //           borderColor: const Color.fromARGB(255, 39, 49, 187),
-  //           labelColor: const Color(0xFFDC2626),
-  //           subtitle: controller.departureAddress.value,
-  //           subtitleColor: const Color(0xFF059669),
-  //           isDeparture: true,
-  //         ),
-          
-  //         // Ajouter un arrêt
-  //         Padding(
-  //           padding: const EdgeInsets.symmetric(vertical: 12),
-  //           child: GestureDetector(
-  //             onTap: controller.addStop,
-  //             child: Row(
-  //               children: [
-  //                 const Icon(
-  //                   Icons.add,
-  //                   color: Color(0xFF2E5BBA),
-  //                   size: 16,
-  //                 ),
-  //                 const SizedBox(width: 8),
-  //                 const Text(
-  //                   'Ajouter un arrêt',
-  //                   style: TextStyle(
-  //                     color: Color(0xFF2E5BBA),
-  //                     fontWeight: FontWeight.w500,
-  //                     fontSize: 14,
-  //                   ),
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-  //         ),
-          
-  //         // Destination avec autocomplétion
-  //         _buildAddressFieldWithAutocomplete(
-  //           title: 'Destination de la livraison',
-  //           label: 'Arriver',
-  //           controller: controller.destinationController,
-  //           backgroundColor: const Color(0xFFFFFF),
-  //           borderColor: const Color(0xFF059669),
-  //           labelColor: const Color(0xFF059669),
-  //           subtitle: controller.destinationAddress.value,
-  //           subtitleColor: const Color(0xFF059669),
-  //           placeholder: 'Téléphone',
-  //           isDeparture: false,
-  //         ),
-          
-  //         const SizedBox(height: 24),
-          
-  //         // Commander Button
-  //         Obx(() => Container(
-  //           width: double.infinity,
-  //           height: 56,
-  //           decoration: BoxDecoration(
-  //             gradient: const LinearGradient(
-  //               colors: [Color(0xFF10B981), Color(0xFF2E5BBA)],
-  //               begin: Alignment.centerLeft,
-  //               end: Alignment.centerRight,
-  //             ),
-  //             borderRadius: BorderRadius.circular(16),
-  //             boxShadow: [
-  //               BoxShadow(
-  //                 color: const Color(0xFF2E5BBA).withOpacity(0.3),
-  //                 blurRadius: 12,
-  //                 offset: const Offset(0, 6),
-  //               ),
-  //             ],
-  //           ),
-  //           child: ElevatedButton(
-  //             onPressed: controller.isLoading.value ? null : controller.commander,
-  //             style: ElevatedButton.styleFrom(
-  //               backgroundColor: Colors.transparent,
-  //               shadowColor: Colors.transparent,
-  //               shape: RoundedRectangleBorder(
-  //                 borderRadius: BorderRadius.circular(16),
-  //               ),
-  //             ),
-  //             child: controller.isLoading.value
-  //               ? const CircularProgressIndicator(
-  //                   valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-  //                 )
-  //               : const Text(
-  //                   'Commander',
-  //                   style: TextStyle(
-  //                     color: Colors.white,
-  //                     fontSize: 18,
-  //                     fontWeight: FontWeight.w600,
-  //                   ),
-  //                 ),
-  //           ),
-  //         )),
-  //       ],
-  //     ),
-  //   );
-  // }
+        // Services en ligne
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center, // Centrer les services
+          children: controller.availableServices.map((service) {
+            final isSelected = controller.selectedServiceModel.value?.id == service.id;
+            return GestureDetector(
+              onTap: () => controller.selectServiceFromMap(service),
+              child: Container(
+                width: 100,
+                height: 32, // Réduit pour s'adapter dans les 60px totaux
+                margin: const EdgeInsets.only(left: 8),
+                decoration: BoxDecoration(
+                  color: isSelected 
+                    ? Colors.white.withOpacity(0.95)
+                    : Colors.white.withOpacity(0.7), 
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2), // Réduit l'opacité
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      service.icon,
+                      color: const Color(0xFF2E5BBA),
+                      size: 16, // Taille réduite
+                    ),
+                    const SizedBox(width: 4),
+                    Flexible(
+                      child: Text(
+                        service.displayName,
+                        style: const TextStyle(
+                          color: Color(0xFF2E5BBA),
+                          fontSize: 9, 
+                          fontWeight: FontWeight.w600,
+                        ),
+                        textAlign: TextAlign.center,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
+    ),
+  );
+}
+
+  // Service unique (quand on vient de DriversListFullView)
+  Widget _buildSingleService() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.95),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              color: const Color(0xFF2E5BBA),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: const Center(
+              child: Icon(
+                Icons.delivery_dining,
+                color: Colors.white,
+                size: 18,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Text(
+            controller.selectedService.value,
+            style: const TextStyle(
+              color: Color(0xFF2E5BBA),
+              fontWeight: FontWeight.w700,
+              fontSize: 18,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildAddressSection() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(10),
       decoration: const BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.only(
@@ -545,21 +365,18 @@ class AddressSearchView extends GetView<AddressSearchController> {
       ),
       child: Column(
         children: [
-          // Départ
-          _buildAddressField(
-            title: 'Adresse de récupération du colis',
-            label: 'Départ',
-            controller: controller.departureController,
-            backgroundColor: const Color(0xFFFFFF),
-            borderColor: const Color.fromARGB(255, 39, 49, 187),
-            labelColor: const Color(0xFFDC2626),
-            subtitle: controller.departureAddress.value,
-            subtitleColor: const Color(0xFF059669),
+          Container(
+            height: 2,
+            width: 50,
+            color: Colors.grey,
           ),
+          const SizedBox(height: 10,),
+          // Départ - Seulement adresse
+          _buildDepartureField(),
           
           // Ajouter un arrêt
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12),
+            padding: const EdgeInsets.symmetric(vertical: 4),
             child: GestureDetector(
               onTap: controller.addStop,
               child: Row(
@@ -583,25 +400,15 @@ class AddressSearchView extends GetView<AddressSearchController> {
             ),
           ),
           
-          // Destination
-          _buildAddressField(
-            title: 'Destination de la livraison',
-            label: 'Arriver',
-            controller: controller.destinationController,
-            backgroundColor: const Color(0xFFFFFF),
-            borderColor: const Color(0xFF059669),
-            labelColor: const Color(0xFF059669),
-            subtitle: controller.destinationAddress.value,
-            subtitleColor: const Color(0xFF059669),
-            placeholder: 'Téléphone',
-          ),
+          // Destination - Téléphone + Adresse
+          _buildDestinationField(),
           
-          const SizedBox(height: 24),
+          // const SizedBox(height: 24),
           
           // Commander Button
           Obx(() => Container(
             width: double.infinity,
-            height: 56,
+            height: 35,
             decoration: BoxDecoration(
               gradient: const LinearGradient(
                 colors: [Color(0xFF10B981), Color(0xFF2E5BBA)],
@@ -644,221 +451,377 @@ class AddressSearchView extends GetView<AddressSearchController> {
       ),
     );
   }
-  // Widget _buildAddressFieldWithAutocomplete({
-  //   required String title,
-  //   required String label,
-  //   required TextEditingController controller,
-  //   required Color backgroundColor,
-  //   required Color borderColor,
-  //   required Color labelColor,
-  //   required String subtitle,
-  //   required Color subtitleColor,
-  //   String? placeholder,
-  //   required bool isDeparture,
-  // }) {
-  //   return Column(
-  //     crossAxisAlignment: CrossAxisAlignment.start,
-  //     children: [
-  //       Row(
-  //         children: [
-  //           Container(
-  //             width: 12,
-  //             height: 12,
-  //             decoration: const BoxDecoration(
-  //               shape: BoxShape.circle,
-  //             ),
-  //           ),
-  //           const SizedBox(width: 12),
-  //           Text(
-  //             title,
-  //             style: const TextStyle(
-  //               fontSize: 14,
-  //               fontWeight: FontWeight.w500,
-  //               color: Color(0xFF6B7280),
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //       const SizedBox(height: 8),
+
+  // Bloc Départ - Seulement champ adresse
+  Widget _buildDepartureField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+          
+            // Container(
+            //   width: 12,
+            //   height: 12,
+            //   decoration: const BoxDecoration(
+            //     color: Color.fromARGB(255, 39, 49, 187),
+            //     shape: BoxShape.circle,
+            //   ),
+            // ),
+            // const SizedBox(width: 12),
+            const Text(
+              'Adresse de récupération du colis',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF6B7280),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(color: const Color.fromARGB(255, 39, 49, 187)),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Départ',
+                    style: TextStyle(
+                      color: Color(0xFFDC2626),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      _buildIconButton(Icons.home_outlined, 'home'),
+                      _buildIconButton(Icons.access_time, 'history'),
+                      _buildIconButton(Icons.location_on_outlined, 'location'),
+                      _buildIconButton(Icons.navigation_outlined, 'favorites'),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              // Champ adresse avec autocomplétion
+              _buildAddressInput(
+                textController: controller.departureController,
+                focusNode: controller.departureFocusNode,
+                hintText: 'Saisissez une adresse...',
+                isDeparture: true,
+              ),
+              
+              const SizedBox(height: 4),
+              TextFormField(
+                // ERREUR CORRIGÉE : Doit être departurePhoneController
+                controller: controller.departurePhoneController, 
+                keyboardType: TextInputType.phone,
+                decoration: InputDecoration(
+                  hintText: 'Numéro de téléphone',
+                  hintStyle: const TextStyle(
+                    color: Color(0xFF9CA3AF),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: Colors.grey[300]!),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(color: Color(0xFF059669), width: 2),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                  isDense: true,
+                ),
+                style: const TextStyle(
+                  color: Color(0xFF1F2937),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              
+              // Adresse sélectionnée
+              Obx(() => Row(
+                children: [
+                  const Icon(
+                    Icons.location_on,
+                    color: Color(0xFF059669),
+                    size: 14,
+                  ),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      controller.departureAddress.value,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFF059669),
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              )),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  // Bloc Destination - Téléphone + Adresse
+  Widget _buildDestinationField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            const Text(
+              'Destination de la livraison',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF6B7280),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(color: const Color(0xFF059669)),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Arriver',
+                    style: TextStyle(
+                      color: Color(0xFF059669),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      _buildIconButton(Icons.home_outlined, 'home'),
+                      _buildIconButton(Icons.access_time, 'history'),
+                      _buildIconButton(Icons.location_on_outlined, 'location'),
+                      _buildIconButton(Icons.navigation_outlined, 'favorites'),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              // Champ téléphone
+              TextFormField(
+                controller: controller.destinationPhoneController,
+                keyboardType: TextInputType.phone,
+                decoration: InputDecoration(
+                  hintText: 'Numéro de téléphone ',
+                  hintStyle: const TextStyle(
+                    color: Color(0xFF9CA3AF),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: Colors.grey[300]!),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(color: Color(0xFF059669), width: 2),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                  isDense: true,
+                ),
+                style: const TextStyle(
+                  color: Color(0xFF1F2937),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              
+              const SizedBox(height: 8),
+              
+              // Champ adresse avec autocomplétion
+              _buildAddressInput(
+                textController: controller.destinationController,
+                focusNode: controller.destinationFocusNode,
+                hintText: 'Adresse du destinataire',
+                isDeparture: false,
+              ),
+              const SizedBox(height: 4),
+              
+              // Adresse sélectionnée
+              Obx(() => Row(
+                children: [
+                  const Icon(
+                    Icons.location_on,
+                    color: Color(0xFF059669),
+                    size: 14,
+                  ),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      controller.destinationAddress.value,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFF059669),
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              )),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  // Champ adresse avec autocomplétion
+  // Dans AddressSearchView
+
+  Widget _buildAddressInput({
+    required TextEditingController textController, // Renommé pour la clarté
+    required FocusNode focusNode,
+    required String hintText,
+    required bool isDeparture,
+  }) {
+    return Stack(
+      // AJOUT IMPORTANT : Permet à la liste de déborder visuellement du champ
+      clipBehavior: Clip.none, 
+      children: [
+        TextFormField(
+          controller: textController,
+          focusNode: focusNode,
+          // La recherche est déjà gérée par le listener dans le contrôleur,
+          // donc pas besoin de code ici.
+          decoration: InputDecoration(
+            hintText: hintText,
+            hintStyle: const TextStyle(
+              color: Color(0xFF9CA3AF),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: Colors.grey[300]!),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(
+                color: isDeparture 
+                  ? const Color.fromARGB(255, 39, 49, 187)
+                  : const Color(0xFF059669), 
+                width: 2
+              ),
+            ),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            isDense: true,
+          ),
+          style: const TextStyle(
+            color: Color(0xFF1F2937),
+            fontWeight: FontWeight.w500,
+          ),
+        ),
         
-  //       // Container principal avec autocomplétion
-  //       Stack(
-  //         children: [
-  //           Container(
-  //             padding: const EdgeInsets.all(16),
-  //             decoration: BoxDecoration(
-  //               color: backgroundColor,
-  //               border: Border.all(color: borderColor),
-  //               borderRadius: BorderRadius.circular(12),
-  //             ),
-  //             child: Column(
-  //               crossAxisAlignment: CrossAxisAlignment.start,
-  //               children: [
-  //                 Row(
-  //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //                   children: [
-  //                     Text(
-  //                       label,
-  //                       style: TextStyle(
-  //                         color: labelColor,
-  //                         fontWeight: FontWeight.w600,
-  //                         fontSize: 14,
-  //                       ),
-  //                     ),
-  //                     Row(
-  //                       children: [
-  //                         _buildIconButton(Icons.home_outlined, 'home'),
-  //                         _buildIconButton(Icons.access_time, 'history'),
-  //                         _buildIconButton(Icons.location_on_outlined, 'location'),
-  //                         _buildIconButton(Icons.navigation_outlined, 'favorites'),
-  //                       ],
-  //                     ),
-  //                   ],
-  //                 ),
-  //                 const SizedBox(height: 8),
-  //                 Row(
-  //                   children: [
-  //                     Expanded(
-  //                       child: TextFormField(
-  //                         controller: controller,
-  //                         decoration: InputDecoration(
-  //                           border: InputBorder.none,
-  //                           hintText: placeholder ?? 'Saisissez une adresse...',
-  //                           hintStyle: const TextStyle(
-  //                             color: Color(0xFF9CA3AF),
-  //                           ),
-  //                         ),
-  //                         style: const TextStyle(
-  //                           color: Color(0xFF1F2937),
-  //                           fontWeight: FontWeight.w500,
-  //                         ),
-  //                       ),
-  //                     ),
-  //                     // Indicateur de chargement pour la recherche
-  //                     Obx(() => isDeparture 
-  //                       ? (this.controller.isSearchingDeparture.value 
-  //                           ? const SizedBox(
-  //                               width: 16,
-  //                               height: 16,
-  //                               child: CircularProgressIndicator(strokeWidth: 2),
-  //                             )
-  //                           : const SizedBox.shrink())
-  //                       : (this.controller.isSearchingDestination.value
-  //                           ? const SizedBox(
-  //                               width: 16,
-  //                               height: 16,
-  //                               child: CircularProgressIndicator(strokeWidth: 2),
-  //                             )
-  //                           : const SizedBox.shrink())),
-  //                   ],
-  //                 ),
-  //                 Row(
-  //                   children: [
-  //                     const SizedBox(width: 4),
-  //                     Expanded(
-  //                       child: Text(
-  //                         subtitle,
-  //                         style: const TextStyle(
-  //                           fontSize: 12,
-  //                           fontWeight: FontWeight.w500,
-  //                           color: Color.fromARGB(255, 115, 226, 191),
-  //                         ),
-  //                         overflow: TextOverflow.ellipsis,
-  //                       ),
-  //                     ),
-  //                     Icon(
-  //                       Icons.location_on,
-  //                       color: subtitleColor,
-  //                       size: 14,
-  //                     ),
-  //                   ],
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-            
-  //           // Liste d'autocomplétion
-  //           Obx(() {
-  //             final showSuggestions = isDeparture 
-  //               ? this.controller.showDepartureSuggestions.value
-  //               : this.controller.showDestinationSuggestions.value;
-              
-  //             final suggestions = isDeparture 
-  //               ? this.controller.departureSuggestions
-  //               : this.controller.destinationSuggestions;
-              
-  //             if (!showSuggestions || suggestions.isEmpty) {
-  //               return const SizedBox.shrink();
-  //             }
-              
-  //             return Positioned(
-  //               top: 90,
-  //               left: 0,
-  //               right: 0,
-  //               child: Container(
-  //                 constraints: const BoxConstraints(maxHeight: 200),
-  //                 decoration: BoxDecoration(
-  //                   color: Colors.white,
-  //                   borderRadius: BorderRadius.circular(12),
-  //                   border: Border.all(color: Colors.grey[300]!),
-  //                   boxShadow: [
-  //                     BoxShadow(
-  //                       color: Colors.black.withOpacity(0.1),
-  //                       blurRadius: 8,
-  //                       offset: const Offset(0, 4),
-  //                     ),
-  //                   ],
-  //                 ),
-  //                 child: ListView.builder(
-  //                   shrinkWrap: true,
-  //                   itemCount: suggestions.length,
-  //                   itemBuilder: (context, index) {
-  //                     final suggestion = suggestions[index];
-  //                     return ListTile(
-  //                       dense: true,
-  //                       leading: const Icon(
-  //                         Icons.location_on,
-  //                         color: Color(0xFF2E5BBA),
-  //                         size: 20,
-  //                       ),
-  //                       title: Text(
-  //                         suggestion.address,
-  //                         style: const TextStyle(
-  //                           fontSize: 14,
-  //                           fontWeight: FontWeight.w500,
-  //                           color: Color(0xFF1F2937),
-  //                         ),
-  //                         maxLines: 1,
-  //                         overflow: TextOverflow.ellipsis,
-  //                       ),
-  //                       subtitle: Text(
-  //                         suggestion.displayName,
-  //                         style: const TextStyle(
-  //                           fontSize: 12,
-  //                           color: Color(0xFF6B7280),
-  //                         ),
-  //                         maxLines: 2,
-  //                         overflow: TextOverflow.ellipsis,
-  //                       ),
-  //                       onTap: () {
-  //                         if (isDeparture) {
-  //                           this.controller.selectDepartureSuggestion(suggestion);
-  //                         } else {
-  //                           this.controller.selectDestinationSuggestion(suggestion);
-  //                         }
-  //                       },
-  //                     );
-  //                   },
-  //                 ),
-  //               ),
-  //             );
-  //           }),
-  //         ],
-  //       ),
-  //       const SizedBox(height: 16),
-  //     ],
-  //   );
-  // }
+        // Liste d'autocomplétion
+        Obx(() {
+          // CORRECTION : Utiliser 'controller' (le GetxController) et non 'this.controller'
+          final showSuggestions = isDeparture
+            ? controller.showDepartureSuggestions.value
+            : controller.showDestinationSuggestions.value;
+          final suggestions = isDeparture
+            ? controller.departureSuggestions
+            : controller.destinationSuggestions;
+          
+          if (!showSuggestions || suggestions.isEmpty) {
+            return const SizedBox.shrink();
+          }
+          
+          return Positioned(
+            top: 55, // Légèrement ajusté pour un meilleur espacement
+            left: 0,
+            right: 0,
+            child: Container(
+              constraints: const BoxConstraints(maxHeight: 200),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.grey[300]!),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: suggestions.length,
+                itemBuilder: (context, index) {
+                  final suggestion = suggestions[index];
+                  return ListTile(
+                    dense: true,
+                    leading: const Icon(
+                      Icons.location_on,
+                      color: Color(0xFF2E5BBA),
+                      size: 18,
+                    ),
+                    title: Text(
+                      suggestion.address,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFF1F2937),
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    subtitle: Text(
+                      suggestion.displayName,
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: Color(0xFF6B7280),
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    onTap: () {
+                      // CORRECTION : Utiliser 'controller' et non 'this.controller'
+                      if (isDeparture) {
+                        controller.selectDepartureSuggestion(suggestion);
+                      } else {
+                        controller.selectDestinationSuggestion(suggestion);
+                      }
+                    },
+                  );
+                },
+              ),
+            ),
+          );
+        }),
+      ],
+    );
+  }
+
 
   Widget _buildIconButton(IconData icon, String type) {
     return Padding(

@@ -26,7 +26,7 @@ class DemNaaAppBar extends StatelessWidget implements PreferredSizeWidget {
       leading: showBackButton
           ? IconButton(
               onPressed: onBackPressed ?? () => Get.back(),
-              icon: const Icon(Icons.arrow_back, color: Color(0xFF1F2937)),
+              icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF1F2937)),
             )
           : null,
       title: Text(
@@ -94,9 +94,9 @@ class DemNaaUserProfileCard extends StatelessWidget {
                 size: 24,
               ),
             ),
-            
+
             const SizedBox(width: 16),
-            
+
             // Informations
             Expanded(
               child: Column(
@@ -107,7 +107,7 @@ class DemNaaUserProfileCard extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF3B82F6),
+                      color: Color(0xFF2E5BBA),
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -121,7 +121,7 @@ class DemNaaUserProfileCard extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             // Flèche
             const Icon(
               Icons.arrow_forward_ios,
@@ -163,22 +163,26 @@ class DemNaaMenuItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: isLast ? EdgeInsets.zero : EdgeInsets.only(bottom: showBorder ? 8 : 0),
+      margin: isLast
+          ? EdgeInsets.zero
+          : EdgeInsets.only(bottom: showBorder ? 8 : 0),
       child: GestureDetector(
         onTap: onTap,
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-          decoration: showBorder ? BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.08),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ) : null,
+          decoration: showBorder
+              ? BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.08),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                )
+              : null,
           child: Row(
             children: [
               // Icône
@@ -187,9 +191,9 @@ class DemNaaMenuItem extends StatelessWidget {
                 color: iconColor ?? _getDefaultIconColor(title),
                 size: 20,
               ),
-              
+
               const SizedBox(width: 16),
-              
+
               // Titre
               Expanded(
                 child: Text(
@@ -197,11 +201,11 @@ class DemNaaMenuItem extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w500,
-                    color: textColor ?? const Color(0xFF3B82F6),
+                    color: textColor ?? const Color(0xFF2E5BBA),
                   ),
                 ),
               ),
-              
+
               // Flèche
               if (showArrow)
                 const Icon(
@@ -239,25 +243,40 @@ class DemNaaMenuItem extends StatelessWidget {
 // =============================================================================
 // LOGO DEMNAA
 // =============================================================================
+
 class DemNaaLogo extends StatelessWidget {
-  final double fontSize;
-  final Color? color;
+  final double? width;
+  final double? height;
+  final BoxFit fit;
+  final Color? color; // Pour teinter l'image si nécessaire
 
   const DemNaaLogo({
     super.key,
-    this.fontSize = 24,
+    this.width,
+    this.height = 24, // Équivalent au fontSize par défaut
+    this.fit = BoxFit.contain,
     this.color,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      'DemNaa',
-      style: TextStyle(
-        fontSize: fontSize,
-        fontWeight: FontWeight.bold,
-        color: color ?? const Color(0xFF3B82F6),
-      ),
+    return Image.asset(
+      'assets/images/demnaa_text.png',
+      width: width,
+      height: height,
+      fit: fit,
+      color: color, // Applique une teinte si spécifiée
+      errorBuilder: (context, error, stackTrace) {
+        // Fallback en cas d'erreur de chargement de l'image
+        return Text(
+          'DemNaa',
+          style: TextStyle(
+            fontSize: height ?? 24,
+            fontWeight: FontWeight.bold,
+            color: color ?? const Color(0xFF3B82F6),
+          ),
+        );
+      },
     );
   }
 }
@@ -290,62 +309,86 @@ class DemNaaBottomNavigation extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.08),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
+            blurRadius: 25,
+            offset: const Offset(0, -8),
           ),
         ],
       ),
-      child: Stack(
-        children: [
-          // Navigation items
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              // Historique
-              _DemNaaNavItem(
-                icon: Icons.assessment_outlined,
-                label: 'Historique',
-                isActive: currentIndex == 0,
-                onTap: () => onTap?.call(0),
+      child: ClipRRect(
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(25),
+          topRight: Radius.circular(25),
+        ),
+        child: Stack(
+          children: [
+            // Ligne de séparation en haut
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                height: 1,
+                color: Colors.grey.withOpacity(0.2),
               ),
-              
-              // Espace pour le bouton central
-              if (showCentralButton) const SizedBox(width: 80),
-              
-              // Mon Compte
-              _DemNaaNavItem(
-                icon: Icons.person_outline,
-                label: 'Mon Compte',
-                isActive: currentIndex == 2,
-                onTap: () => onTap?.call(2),
+            ),
+
+            // Navigation items
+            Positioned.fill(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  // Historique à gauche
+                  _DemNaaNavItem(
+                    icon: Icons.assessment_outlined,
+                    label: 'Historique',
+                    isActive: currentIndex == 0,
+                    onTap: () => onTap?.call(0),
+                  ),
+
+                  // DemNaa au centre (placeholder pour le bouton central)
+                  if (showCentralButton) const SizedBox(width: 90),
+
+                  // Mon Compte à droite
+                  _DemNaaNavItem(
+                    icon: Icons.person_outline,
+                    label: 'Mon Compte',
+                    isActive: currentIndex == 2,
+                    onTap: () => onTap?.call(2),
+                  ),
+                ],
               ),
-            ],
-          ),
-          
-          // Bouton central
-          if (showCentralButton) _buildCentralButton(),
-        ],
+            ),
+
+            // Bouton central DemNaa
+            if (showCentralButton) _buildCentralButton(),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildCentralButton() {
+    final isSelected = currentIndex == 1;
+
     return Positioned(
-      top: -25,
-      left: MediaQuery.of(Get.context!).size.width / 2 - 40,
+      top: -25, // remonte au-dessus de la barre
+      left: MediaQuery.of(Get.context!).size.width / 2 - 45,
       child: GestureDetector(
         onTap: () => onTap?.call(1),
         child: Container(
-          width: 80,
-          height: 80,
-          decoration: const BoxDecoration(
+          height: 90,
+          width: 90,
+          decoration: BoxDecoration(
             color: Colors.white,
-            shape: BoxShape.circle,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(30),
+              topRight: Radius.circular(30),
+            ),
             boxShadow: [
               BoxShadow(
-                color: Color(0x1F000000),
+                color: Colors.black.withOpacity(0.15),
                 blurRadius: 8,
-                offset: Offset(0, 2),
+                offset: const Offset(0, 2),
               ),
             ],
           ),
@@ -353,30 +396,27 @@ class DemNaaBottomNavigation extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                width: 40,
-                height: 40,
+                width: 50,
+                height: 50,
                 decoration: const BoxDecoration(
-                  color: Color(0xFF3B82F6),
+                  color: Colors.white,
                   shape: BoxShape.circle,
                 ),
-                child: const Center(
-                  child: Text(
-                    'D',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
+                child: Center(
+                  child: Image.asset(
+                    'assets/images/demna_icone.png',
+                    width: 40,
+                    height: 40,
                   ),
                 ),
               ),
-              const SizedBox(height: 2),
+              const SizedBox(height: 4),
               const Text(
                 'DemNaa',
                 style: TextStyle(
-                  fontSize: 10,
-                  color: Color(0xFF3B82F6),
-                  fontWeight: FontWeight.w600,
+                  fontSize: 12,
+                  color: Color(0xFF2E5BBA),
+                  fontWeight: FontWeight.w700,
                 ),
               ),
             ],
@@ -392,36 +432,51 @@ class _DemNaaNavItem extends StatelessWidget {
   final IconData icon;
   final String label;
   final bool isActive;
-  final VoidCallback? onTap;
+  final VoidCallback onTap;
 
   const _DemNaaNavItem({
     required this.icon,
     required this.label,
-    this.isActive = false,
-    this.onTap,
+    required this.isActive,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12),
+      behavior: HitTestBehavior.translucent,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        decoration: BoxDecoration(
+          gradient: isActive
+              ? LinearGradient(
+                  colors: [
+                    Color(0xFF29CA96), // ✅ Vert
+                    Color(0xFF4463DF), // ✅ Bleu
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                )
+              : null,
+          color: isActive ? null : Colors.transparent,
+          borderRadius: BorderRadius.circular(16),
+        ),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
               icon,
-              color: isActive ? const Color(0xFF10B981) : const Color(0xFF3B82F6),
-              size: 24,
+              size: 28,
+              color: isActive ? Colors.white : Colors.blue[700],
             ),
             const SizedBox(height: 4),
             Text(
               label,
               style: TextStyle(
                 fontSize: 12,
-                color: isActive ? const Color(0xFF10B981) : const Color(0xFF3B82F6),
-                fontWeight: FontWeight.w500,
+                fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+                color: isActive ? Colors.white : Colors.blue[700],
               ),
             ),
           ],
@@ -434,11 +489,13 @@ class _DemNaaNavItem extends StatelessWidget {
 // =============================================================================
 // BUTTON PRINCIPAL
 // =============================================================================
+
 class DemNaaButton extends StatelessWidget {
   final String text;
   final VoidCallback onPressed;
   final bool isLoading;
   final Color? backgroundColor;
+  final List<Color>? gradientColors; // Nouveau paramètre pour le gradient
   final Color? textColor;
   final double? width;
   final double height;
@@ -450,6 +507,7 @@ class DemNaaButton extends StatelessWidget {
     required this.onPressed,
     this.isLoading = false,
     this.backgroundColor,
+    this.gradientColors, // Nouveau paramètre
     this.textColor,
     this.width,
     this.height = 50,
@@ -461,33 +519,51 @@ class DemNaaButton extends StatelessWidget {
     return SizedBox(
       width: width ?? double.infinity,
       height: height,
-      child: ElevatedButton(
-        onPressed: isLoading ? null : onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: backgroundColor ?? const Color(0xFF10B981),
-          foregroundColor: textColor ?? Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(borderRadius),
-          ),
-          elevation: 0,
+      child: Container(
+        decoration: BoxDecoration(
+          // Utilise le gradient si fourni, sinon la couleur de fond
+          gradient: gradientColors != null
+              ? LinearGradient(
+                  colors: gradientColors!,
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                )
+              : null,
+          color: gradientColors == null
+              ? (backgroundColor ?? const Color(0xFF10B981))
+              : null,
+          borderRadius: BorderRadius.circular(borderRadius),
         ),
-        child: isLoading
-            ? const SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: Colors.white,
+        child: ElevatedButton(
+          onPressed: isLoading ? null : onPressed,
+          style: ElevatedButton.styleFrom(
+            backgroundColor:
+                Colors.transparent, // Transparent pour voir le gradient
+            foregroundColor: textColor ?? Colors.white,
+            shadowColor: Colors.transparent, // Supprime l'ombre
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(borderRadius),
+            ),
+            elevation: 0,
+          ),
+          child: isLoading
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
+                )
+              : Text(
+                  text,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: textColor ?? Colors.white,
+                  ),
                 ),
-              )
-            : Text(
-                text,
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: textColor ?? Colors.white,
-                ),
-              ),
+        ),
       ),
     );
   }

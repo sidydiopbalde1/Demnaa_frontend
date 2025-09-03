@@ -19,6 +19,13 @@ dependencies:
   flutter_dotenv: ^5.1.0
   permission_handler: ^11.1.0
   cupertino_icons: ^1.0.8
+  file_picker: ^10.2.1
+  shared_preferences: ^2.2.2
+  dio: ^5.4.0
+
+  #url_launcher: ^6.2.2
+
+
 
 dev_dependencies:
   flutter_test:
@@ -44,3 +51,5 @@ flutter:
     - assets/images/demna_moto_taxi.png
     - assets/images/demnaa_moto_sante.png
     - assets/images/user_map_icone.png
+    - assets/images/demnaa_text.png
+    - assets/images/demnaa_first_page.jpeg

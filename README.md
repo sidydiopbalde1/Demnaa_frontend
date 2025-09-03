@@ -14,3 +14,14 @@ A new Flutter project.
 ## commande pour créer un controller
 get create controller:nom_du_controleur
 
+
+# couleurs DemNaa
+
+- bleu 0xFF2E5BBA
+
+# Waydroid
+waydroid session stop
+
+waydroid session start
+
+adb connect 192.168.240.112:5555

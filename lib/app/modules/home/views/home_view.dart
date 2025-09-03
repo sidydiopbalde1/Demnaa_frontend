@@ -15,13 +15,13 @@ class PinPainter extends CustomPainter {
       ..style = PaintingStyle.fill;
 
     final path = Path();
-    
+
     // Dessiner le cercle du pin
     path.addOval(Rect.fromCircle(
       center: Offset(size.width / 2, size.height / 2 - 7),
       radius: 25,
     ));
-    
+
     // Dessiner la pointe du pin
     path.moveTo(size.width / 2, size.height - 5);
     path.lineTo(size.width / 2 - 10, size.height / 2 + 8);
@@ -29,7 +29,7 @@ class PinPainter extends CustomPainter {
     path.close();
 
     canvas.drawPath(path, paint);
-    
+
     // Ombre
     canvas.drawShadow(path, Colors.black.withOpacity(0.3), 8, false);
   }
@@ -37,6 +37,7 @@ class PinPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
+
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
 
@@ -55,7 +56,8 @@ class HomeView extends GetView<HomeController> {
               _buildFavoritesSection(),
               const SizedBox(height: 35),
               _buildBonusSection(),
-              const SizedBox(height: 120), // Espace pour la bottom nav personnalisée
+              const SizedBox(
+                  height: 120), // Espace pour la bottom nav personnalisée
             ],
           ),
         ),
@@ -64,364 +66,368 @@ class HomeView extends GetView<HomeController> {
       bottomNavigationBar: _buildCustomBottomNavigation(),
     );
   }
-Widget _buildHeader() {
-  return AnimatedBuilder(
-    animation: controller.headerAnimationController,
-    builder: (context, child) {
-      return Transform.translate(
-        offset: Offset(0, controller.headerSlideAnimation.value),
-        child: Opacity(
-          opacity: controller.headerFadeAnimation.value,
-          child: Container(
-            height: 200,
-            decoration: const BoxDecoration(
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(30),
-                bottomRight: Radius.circular(30),
-              ),
-            ),
-            child: ClipRRect(
-              borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(30),
-                bottomRight: Radius.circular(30),
-              ),
-              child: Stack(
-                children: [
-                  // 🖼️ VOTRE IMAGE DE FOND
-                  Positioned.fill(
-                    child: Image.asset(
-                      'assets/images/demnaa_header.png',
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          decoration: const BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                Color(0xFF4A90E2),
-                                Color(0xFF5B9BD5),
-                                Color(0xFF6FA8DC),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  
-                  // 🌫️ OVERLAY LÉGER pour améliorer la lisibilité du texte
-                  Positioned.fill(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Colors.black.withOpacity(0.1),
-                            Colors.black.withOpacity(0.2),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  
-                  // Main content - POSITIONNÉ PLUS BAS
-                  Positioned(
-                    bottom: 40, // 🔽 Positionnement depuis le bas
-                    left: 25,
-                    right: 25,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // 📸 PHOTO + NOM À GAUCHE
-                        Row(
-                          children: [
-                            // Photo de profil
-                            Container(
-                              width: 55,
-                              height: 55,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.15),
-                                    blurRadius: 15,
-                                    offset: const Offset(0, 5),
-                                  ),
-                                ],
-                              ),
-                              child: ClipOval(
-                                child: Image.asset(
-                                  'assets/images/demnaa_icone_user.png',
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return Container(
-                                      decoration: const BoxDecoration(
-                                        color: Colors.white,
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: const Icon(
-                                        Icons.person,
-                                        color: Color(0xFF4A90E2),
-                                        size: 28,
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                            ),
-                            
-                            const SizedBox(width: 15),
-                            
-                            // Nom
-                            Obx(() => Text(
-                              'Bonjour, ${controller.userName.value}',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            )),
-                          ],
-                        ),
-                        
-                        // 🔔 NOTIFICATION À DROITE
-                        Container(
-                          width: 50,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.15),
-                                blurRadius: 15,
-                                offset: const Offset(0, 5),
-                              ),
-                            ],
-                          ),
-                          child: const Icon(
-                            Icons.notifications_outlined,
-                            color: Color(0xFF4A90E2),
-                            size: 24,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
-    },
-  );
-}
 
- Widget _buildServicesSection() {
-  return AnimatedBuilder(
-    animation: controller.servicesAnimationController,
-    builder: (context, child) {
-      return Transform.translate(
-        offset: Offset(0, controller.servicesSlideAnimation.value),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Nos Services',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  // Bouton de rafraîchissement
-                  Obx(() => controller.isLoadingServices.value
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : IconButton(
-                          onPressed: controller.refreshServices,
-                          icon: const Icon(Icons.refresh, size: 20),
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
-                        )),
-                ],
-              ),
-              const SizedBox(height: 15),
-              
-              // Services dynamiques depuis l'API
-              Obx(() {
-                if (controller.isLoadingServices.value && controller.services.isEmpty) {
-                  // État de chargement initial
-                  return SizedBox(
-                    height: 100,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: List.generate(3, (index) => 
-                        _buildServiceCardSkeleton()
-                      ),
-                    ),
-                  );
-                }
-                
-                if (controller.services.isEmpty) {
-                  // Aucun service disponible
-                  return Container(
-                    height: 100,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[100],
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: const Center(
-                      child: Text(
-                        'Aucun service disponible',
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                    ),
-                  );
-                }
-                
-                // Afficher les services (max 3 pour l'accueil)
-                final displayedServices = controller.services.take(3).toList();
-                
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: displayedServices.asMap().entries.map((entry) {
-                    final index = entry.key;
-                    final service = entry.value;
-                    return _buildServiceCard(service, index * 200);
-                  }).toList(),
-                );
-              }),
-            ],
-          ),
-        ),
-      );
-    },
-  );
-}
-
-Widget _buildServiceCard(ServiceModel service, int index) {
-  return TweenAnimationBuilder<double>(
-    duration: Duration(milliseconds: 600 + (index * 200)),
-    tween: Tween(begin: 0.0, end: 1.0),
-    curve: Curves.elasticOut,
-    builder: (context, value, child) {
-      return Transform.scale(
-        scale: value,
-        child: GestureDetector(
-          onTap: () => controller.onServiceTap(service),
-          child: Container(
-            width: 100,
-            height: 100,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 10,
-                  offset: const Offset(0, 5),
+  Widget _buildHeader() {
+    return AnimatedBuilder(
+      animation: controller.headerAnimationController,
+      builder: (context, child) {
+        return Transform.translate(
+          offset: Offset(0, controller.headerSlideAnimation.value),
+          child: Opacity(
+            opacity: controller.headerFadeAnimation.value,
+            child: Container(
+              height: 200,
+              decoration: const BoxDecoration(
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(30),
+                  bottomRight: Radius.circular(30),
                 ),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(15),
-              child: Stack(
-                children: [
-                  // 🖼️ IMAGE D'ARRIÈRE-PLAN qui couvre toute la carte
-                  if (service.photo.isNotEmpty && service.photo != 'https://via.placeholder.com/150')
+              ),
+              child: ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(30),
+                  bottomRight: Radius.circular(30),
+                ),
+                child: Stack(
+                  children: [
+                    // 🖼️ VOTRE IMAGE DE FOND
                     Positioned.fill(
-                      child: Image.network(
-                        service.photo,
+                      child: Image.asset(
+                        'assets/images/demnaa_header.png',
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) {
                           return Container(
-                            decoration: BoxDecoration(
-                              gradient: service.gradient,
+                            decoration: const BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  Color(0xFF4A90E2),
+                                  Color(0xFF5B9BD5),
+                                  Color(0xFF6FA8DC),
+                                ],
+                              ),
                             ),
                           );
                         },
                       ),
-                    )
-                  else
-                    // 🎨 DÉGRADÉ si pas d'image
+                    ),
+
+                    // 🌫️ OVERLAY LÉGER pour améliorer la lisibilité du texte
                     Positioned.fill(
                       child: Container(
                         decoration: BoxDecoration(
-                          gradient: service.gradient,
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.black.withOpacity(0.1),
+                              Colors.black.withOpacity(0.2),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  
-                  // 🎯 ICÔNE CENTRÉE (uniquement si pas d'image)
-                  if (service.photo.isEmpty || service.photo == 'https://via.placeholder.com/150')
-                    Positioned.fill(
-                      child: Center(
-                        child: Icon(
-                          service.icon,
-                          color: Colors.white,
-                          size: 35,
-                        ),
+
+                    // Main content - POSITIONNÉ PLUS BAS
+                    Positioned(
+                      bottom: 40, // 🔽 Positionnement depuis le bas
+                      left: 25,
+                      right: 25,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          // 📸 PHOTO + NOM À GAUCHE
+                          Row(
+                            children: [
+                              // Photo de profil
+                              Container(
+                                width: 55,
+                                height: 55,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.15),
+                                      blurRadius: 15,
+                                      offset: const Offset(0, 5),
+                                    ),
+                                  ],
+                                ),
+                                child: ClipOval(
+                                  child: Image.asset(
+                                    'assets/images/demnaa_icone_user.png',
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return Container(
+                                        decoration: const BoxDecoration(
+                                          color: Colors.white,
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: const Icon(
+                                          Icons.person,
+                                          color: Color(0xFF4A90E2),
+                                          size: 28,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
+
+                              const SizedBox(width: 15),
+
+                              // Nom
+                              Obx(() => Text(
+                                    'Bonjour, ${controller.userName.value}',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  )),
+                            ],
+                          ),
+
+                          // 🔔 NOTIFICATION À DROITE
+                          Container(
+                            width: 50,
+                            height: 50,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.15),
+                                  blurRadius: 15,
+                                  offset: const Offset(0, 5),
+                                ),
+                              ],
+                            ),
+                            child: const Icon(
+                              Icons.notifications_outlined,
+                              color: Color(0xFF4A90E2),
+                              size: 24,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  
-                  // 📝 LIBELLÉ EN BAS avec fond semi-transparent
-                  Positioned(
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Colors.transparent,
-                            Colors.black.withOpacity(0.7),
-                          ],
-                        ),
-                        borderRadius: const BorderRadius.only(
-                          bottomLeft: Radius.circular(15),
-                          bottomRight: Radius.circular(15),
-                        ),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 12,
-                      ),
-                      child: Text(
-                        service.displayName,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                        ),
-                        textAlign: TextAlign.center,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-      );
-    },
-  );
-}
+        );
+      },
+    );
+  }
+
+  Widget _buildServicesSection() {
+    return AnimatedBuilder(
+      animation: controller.servicesAnimationController,
+      builder: (context, child) {
+        return Transform.translate(
+          offset: Offset(0, controller.servicesSlideAnimation.value),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Nos Services',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    // Bouton de rafraîchissement
+                    Obx(() => controller.isLoadingServices.value
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : IconButton(
+                            onPressed: controller.refreshServices,
+                            icon: const Icon(Icons.refresh, size: 20),
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                          )),
+                  ],
+                ),
+                const SizedBox(height: 15),
+
+                // Services dynamiques depuis l'API
+                Obx(() {
+                  if (controller.isLoadingServices.value &&
+                      controller.services.isEmpty) {
+                    // État de chargement initial
+                    return SizedBox(
+                      height: 100,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: List.generate(
+                            3, (index) => _buildServiceCardSkeleton()),
+                      ),
+                    );
+                  }
+
+                  if (controller.services.isEmpty) {
+                    // Aucun service disponible
+                    return Container(
+                      height: 100,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[100],
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: const Center(
+                        child: Text(
+                          'Aucun service disponible',
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      ),
+                    );
+                  }
+
+                  // Afficher les services (max 3 pour l'accueil)
+                  final displayedServices =
+                      controller.services.take(3).toList();
+
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: displayedServices.asMap().entries.map((entry) {
+                      final index = entry.key;
+                      final service = entry.value;
+                      return _buildServiceCard(service, index * 200);
+                    }).toList(),
+                  );
+                }),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildServiceCard(ServiceModel service, int index) {
+    return TweenAnimationBuilder<double>(
+      duration: Duration(milliseconds: 600 + (index * 200)),
+      tween: Tween(begin: 0.0, end: 1.0),
+      curve: Curves.elasticOut,
+      builder: (context, value, child) {
+        return Transform.scale(
+          scale: value,
+          child: GestureDetector(
+            onTap: () => controller.onServiceTap(service),
+            child: Container(
+              width: 100,
+              height: 100,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 10,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(15),
+                child: Stack(
+                  children: [
+                    // 🖼️ IMAGE D'ARRIÈRE-PLAN qui couvre toute la carte
+                    if (service.photo.isNotEmpty &&
+                        service.photo != 'https://via.placeholder.com/150')
+                      Positioned.fill(
+                        child: Image.network(
+                          service.photo,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              decoration: BoxDecoration(
+                                gradient: service.gradient,
+                              ),
+                            );
+                          },
+                        ),
+                      )
+                    else
+                      // 🎨 DÉGRADÉ si pas d'image
+                      Positioned.fill(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            gradient: service.gradient,
+                          ),
+                        ),
+                      ),
+
+                    // 🎯 ICÔNE CENTRÉE (uniquement si pas d'image)
+                    if (service.photo.isEmpty ||
+                        service.photo == 'https://via.placeholder.com/150')
+                      Positioned.fill(
+                        child: Center(
+                          child: Icon(
+                            service.icon,
+                            color: Colors.white,
+                            size: 35,
+                          ),
+                        ),
+                      ),
+
+                    // 📝 LIBELLÉ EN BAS avec fond semi-transparent
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.transparent,
+                              Colors.black.withOpacity(0.7),
+                            ],
+                          ),
+                          borderRadius: const BorderRadius.only(
+                            bottomLeft: Radius.circular(15),
+                            bottomRight: Radius.circular(15),
+                          ),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 12,
+                        ),
+                        child: Text(
+                          service.displayName,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                          ),
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
 
   Widget _buildServiceCardSkeleton() {
     return Container(
@@ -440,71 +446,73 @@ Widget _buildServiceCard(ServiceModel service, int index) {
     );
   }
 
- Widget _buildFavoritesSection() {
-  return AnimatedBuilder(
-    animation: controller.favoritesAnimationController,
-    builder: (context, child) {
-      return Opacity(
-        opacity: controller.favoritesFadeAnimation.value,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Lieux favoris',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () => _showAllFavoriteS(),
-                    child: const Text(
-                      'Voir tout',
+  Widget _buildFavoritesSection() {
+    return AnimatedBuilder(
+      animation: controller.favoritesAnimationController,
+      builder: (context, child) {
+        return Opacity(
+          opacity: controller.favoritesFadeAnimation.value,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Lieux favoris',
                       style: TextStyle(
-                        color: Color(0xFF4A90E2),
-                        fontWeight: FontWeight.w600,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
                       ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 15),
-              
-              // 🔧 CORRECTION : Augmentation de la hauteur et amélioration de la disposition
-              Obx(() {
-                final places = controller.favoritePlaceController.favoritePlaces;
-                final displayedPlaces = places.take(3).toList();
-                
-                return SizedBox(
-                  height: 120, // ✅ Augmenté de 100 à 120
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    padding: EdgeInsets.zero, // ✅ Supprime le padding par défaut
-                    itemCount: displayedPlaces.length + 1,
-                    itemBuilder: (context, index) {
-                      if (index == displayedPlaces.length) {
-                        return _buildAddFavoriteButton();
-                      }
-                      
-                      final place = displayedPlaces[index];
-                      return _buildFavoriteItemDynamic(place, index);
-                    },
-                  ),
-                );
-              }),
-            ],
+                    TextButton(
+                      onPressed: () => _showAllFavoriteS(),
+                      child: const Text(
+                        'Voir tout',
+                        style: TextStyle(
+                          color: Color(0xFF4A90E2),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 15),
+
+                // 🔧 CORRECTION : Augmentation de la hauteur et amélioration de la disposition
+                Obx(() {
+                  final places =
+                      controller.favoritePlaceController.favoritePlaces;
+                  final displayedPlaces = places.take(3).toList();
+
+                  return SizedBox(
+                    height: 120, // ✅ Augmenté de 100 à 120
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      padding:
+                          EdgeInsets.zero, // ✅ Supprime le padding par défaut
+                      itemCount: displayedPlaces.length + 1,
+                      itemBuilder: (context, index) {
+                        if (index == displayedPlaces.length) {
+                          return _buildAddFavoriteButton();
+                        }
+
+                        final place = displayedPlaces[index];
+                        return _buildFavoriteItemDynamic(place, index);
+                      },
+                    ),
+                  );
+                }),
+              ],
+            ),
           ),
-        ),
-      );
-    },
-  );
-}
+        );
+      },
+    );
+  }
 
   Widget _buildFavoriteItemDynamic(FavoritePlace place, int index) {
     return GestureDetector(
@@ -595,299 +603,293 @@ Widget _buildServiceCard(ServiceModel service, int index) {
     );
   }
 
-Widget _buildBonusSection() {
-  return AnimatedBuilder(
-    animation: controller.bonusAnimationController,
-    builder: (context, child) {
-      return Transform.scale(
-        scale: controller.bonusScaleAnimation.value,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 25),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Mes bonus',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF2D3748),
+  Widget _buildBonusSection() {
+    return AnimatedBuilder(
+      animation: controller.bonusAnimationController,
+      builder: (context, child) {
+        return Transform.scale(
+          scale: controller.bonusScaleAnimation.value,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 25),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Mes bonus',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF2D3748),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 20),
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
-                      blurRadius: 20,
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    // 🎁 VOTRE IMAGE PERSONNALISÉE AVEC GRADIENT
-                    Container(
-                      width: 50,
-                      height: 50,
-                      decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            Color(0xFF29CA96), // ✅ Couleur verte corrigée
-                            Color(0xFF4463DF), // ✅ Couleur bleue corrigée
+                const SizedBox(height: 20),
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.08),
+                        blurRadius: 20,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      // 🎁 VOTRE IMAGE PERSONNALISÉE AVEC GRADIENT
+                      Container(
+                        width: 50,
+                        height: 50,
+                        decoration: const BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              Color(0xFF29CA96), // ✅ Couleur verte corrigée
+                              Color(0xFF4463DF), // ✅ Couleur bleue corrigée
+                            ],
+                          ),
+                          shape: BoxShape.circle,
+                        ),
+                        child: ClipOval(
+                          child: Center(
+                            child: Image.asset(
+                              'assets/images/gift_icon.png', 
+                              width: 30,
+                              height: 30,
+                              fit: BoxFit.contain,
+                              color: Colors
+                                  .white, // 🎨 Applique une teinte blanche si nécessaire
+                              errorBuilder: (context, error, stackTrace) {
+                                // Fallback si l'image n'est pas trouvée
+                                return const Icon(
+                                  Icons.card_giftcard,
+                                  color: Colors.white,
+                                  size: 24,
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 18),
+                      const Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Effectuez une première commande',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF2D3748),
+                              ),
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              'pour voir vos bonus cadeau',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Color(0xFF718096),
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
                           ],
                         ),
-                        shape: BoxShape.circle,
                       ),
-                      child: ClipOval(
-                        child: Center(
-                          child: Image.asset(
-                            'assets/images/gift_icon.png', // 🔄 Remplacez par votre image
-                            width: 30,
-                            height: 30,
-                            fit: BoxFit.contain,
-                            color: Colors.white, // 🎨 Applique une teinte blanche si nécessaire
-                            errorBuilder: (context, error, stackTrace) {
-                              // Fallback si l'image n'est pas trouvée
-                              return const Icon(
-                                Icons.card_giftcard,
-                                color: Colors.white,
-                                size: 24,
-                              );
-                            },
-                          ),
-                        ),
+                      const Icon(
+                        Icons.arrow_forward_ios,
+                        size: 16,
+                        color: Color(0xFF718096),
                       ),
-                    ),
-                    const SizedBox(width: 18),
-                    const Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Effectuez une première commande',
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w700,
-                              color: Color(0xFF2D3748),
-                            ),
-                          ),
-                          SizedBox(height: 4),
-                          Text(
-                            'pour voir vos bonus cadeau',
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: Color(0xFF718096),
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Icon(
-                      Icons.arrow_forward_ios,
-                      size: 16,
-                      color: Color(0xFF718096),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      );
-    },
-  );
-}
+        );
+      },
+    );
+  }
 
   // 🎯 BARRE DE NAVIGATION EXACTE COMME L'IMAGE
   Widget _buildCustomBottomNavigation() {
     return Obx(() => Container(
-      height: 80,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(25),
-          topRight: Radius.circular(25),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 25,
-            offset: const Offset(0, -8),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(25),
-          topRight: Radius.circular(25),
-        ),
-        child: Stack(
-          children: [
-            // Ligne de séparation en haut
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                height: 1,
-                color: Colors.grey.withOpacity(0.2),
-              ),
+          height: 80,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(25),
+              topRight: Radius.circular(25),
             ),
-            
-            // Navigation items
-            Positioned.fill(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  // Historique à gauche
-                  _buildNavItem(
-                    Icons.assessment_outlined,
-                    'Historique',
-                    0,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.08),
+                blurRadius: 25,
+                offset: const Offset(0, -8),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(25),
+              topRight: Radius.circular(25),
+            ),
+            child: Stack(
+              children: [
+                // Ligne de séparation en haut
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  child: Container(
+                    height: 1,
+                    color: Colors.grey.withOpacity(0.2),
                   ),
-                  
-                  // DemNaa au centre
-                  _buildCentralNavItem(),
-                  
-                  // Mon Compte à droite  
-                  _buildNavItem(
-                    Icons.person_outline,
-                    'Mon Compte',
-                    2,
+                ),
+
+                // Navigation items
+                Positioned.fill(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      // Historique à gauche
+                      _buildNavItem(
+                        Icons.assessment_outlined,
+                        'Historique',
+                        0,
+                      ),
+
+                      // DemNaa au centre
+                      _buildCentralNavItem(),
+
+                      // Mon Compte à droite
+                      _buildNavItem(
+                        Icons.person_outline,
+                        'Mon Compte',
+                        2,
+                      ),
+                    ],
                   ),
-                ],
+                ),
+              ],
+            ),
+          ),
+        ));
+  }
+
+  // Item de navigation standard (côtés)
+  Widget _buildNavItem(IconData icon, String label, int index) {
+    final isSelected = controller.selectedBottomIndex.value == index;
+
+    return GestureDetector(
+      onTap: () {
+        controller.selectedBottomIndex.value = index;
+
+        // Navigation selon l'index
+        switch (index) {
+          case 0:
+            // Historique - vous pouvez implémenter cette route plus tard
+            // Get.toNamed(Routes.HISTORY);
+              Get.toNamed('/history');
+            break;
+          case 1:
+            // DemNaa (Home) - pas de navigation nécessaire
+            break;
+          case 2:
+            // Mon Compte - navigation vers AccountView
+            Get.toNamed('/account');
+            break;
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              color: const Color(0xFF2E5BBA),
+              size: 24,
+            ),
+            const SizedBox(height: 6),
+            Text(
+              label,
+              style: const TextStyle(
+                fontSize: 12,
+                color: Color(0xFF2E5BBA),
+                fontWeight: FontWeight.w600,
               ),
             ),
           ],
         ),
       ),
-    ));
+    );
   }
-
-  // Item de navigation standard (côtés)
-Widget _buildNavItem(IconData icon, String label, int index) {
-  final isSelected = controller.selectedBottomIndex.value == index;
-  
-  return GestureDetector(
-    onTap: () {
-      controller.selectedBottomIndex.value = index;
-      
-      // Navigation selon l'index
-      switch (index) {
-        case 0:
-          // Historique - vous pouvez implémenter cette route plus tard
-          // Get.toNamed(Routes.HISTORY);
-          print('Navigation vers Historique');
-          break;
-        case 1:
-          // DemNaa (Home) - pas de navigation nécessaire
-          break;
-        case 2:
-          // Mon Compte - navigation vers AccountView
-          Get.toNamed('/account');
-          break;
-      }
-    },
-    child: Container(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            color: const Color(0xFF2E5BBA),
-            size: 24,
-          ),
-          const SizedBox(height: 6),
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 12,
-              color: Color(0xFF2E5BBA),
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
-}
 
   // 🎯 BOUTON CENTRAL AVEC LOGO DEMNAA
 // 🎯 VERSION AVEC CUSTOM PAINTER
-Widget _buildCentralNavItem() {
-  final isSelected = controller.selectedBottomIndex.value == 1;
+  Widget _buildCentralNavItem() {
+    final isSelected = controller.selectedBottomIndex.value == 1;
 
-return Positioned(
-  top: -25, // remonte au-dessus de la barre
-  left: MediaQuery.of(Get.context!).size.width / 2 - 45,
-  child: GestureDetector(
-    onTap: () => controller.changeBottomNavIndex(1),
-    child: Container(
-      height: 90,
-      width: 90,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(30),
-          topRight: Radius.circular(30),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.15),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 50,
-            height: 50,
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
+    return Positioned(
+      top: -25, // remonte au-dessus de la barre
+      left: MediaQuery.of(Get.context!).size.width / 2 - 45,
+      child: GestureDetector(
+        onTap: () => controller.changeBottomNavIndex(1),
+        child: Container(
+          height: 90,
+          width: 90,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(30),
+              topRight: Radius.circular(30),
             ),
-            child: Center(
-              child: Image.asset(
-                'assets/images/demna_icone.png',
-                width: 40,
-                height: 40,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.15),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
               ),
-            ),
+            ],
           ),
-          const SizedBox(height: 4),
-          const Text(
-            'DemNaa',
-            style: TextStyle(
-              fontSize: 12,
-              color: Color(0xFF2E5BBA),
-              fontWeight: FontWeight.w700,
-            ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 50,
+                height: 50,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: Image.asset(
+                    'assets/images/demna_icone.png',
+                    width: 40,
+                    height: 40,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 4),
+              const Text(
+                'DemNaa',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Color(0xFF2E5BBA),
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
-    ),
-  ),
-);
-
-}
-
-
-
-
-
-
+    );
+  }
 
   void _showAllFavoriteS() {
     Get.bottomSheet(
@@ -933,12 +935,13 @@ return Positioned(
                 ],
               ),
             ),
-            
+
             // Liste des favoris
             Expanded(
               child: Obx(() {
-                final places = controller.favoritePlaceController.favoritePlaces;
-                
+                final places =
+                    controller.favoritePlaceController.favoritePlaces;
+
                 if (places.isEmpty) {
                   return const Center(
                     child: Column(
@@ -961,7 +964,7 @@ return Positioned(
                     ),
                   );
                 }
-                
+
                 return ListView.builder(
                   padding: const EdgeInsets.all(25),
                   itemCount: places.length,
@@ -1034,7 +1037,7 @@ return Positioned(
                 );
               }),
             ),
-            
+
             // Bouton d'ajout
             Padding(
               padding: const EdgeInsets.all(25),

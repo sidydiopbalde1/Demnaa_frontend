@@ -5,59 +5,112 @@ import 'package:latlong2/latlong.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
+import 'package:demnaa_front/app/models/services_model.dart';
 
 class AddressSearchController extends GetxController {
   // Text Controllers
   final departureController = TextEditingController();
   final destinationController = TextEditingController();
-  
+  final departurePhoneController = TextEditingController(); // Nouveau
+  final destinationPhoneController = TextEditingController();
+
   // Focus Nodes pour gérer le focus
   final departureFocusNode = FocusNode();
   final destinationFocusNode = FocusNode();
-  
+
   // Timer pour debouncing
   Timer? _departureDebounce;
   Timer? _destinationDebounce;
-  
+
   // Observable variables
   var isLoading = false.obs;
   var selectedService = 'Livraison'.obs;
   var departureAddress = 'Grand Dakar Rue 449'.obs;
   var destinationAddress = 'Adresse du destinataire'.obs;
-  final currentLocation = LatLng(14.716677, -17.467686).obs; // Dakar par défaut
+  var departurePhone = ''.obs; // Nouveau
+  var destinationPhone = ''.obs;
+  final currentLocation = LatLng(14.716677, -17.467686).obs;
   final departureLocation = Rxn<LatLng>();
   final destinationLocation = Rxn<LatLng>();
-  
-  // Nouvelles variables pour l'autocomplétion
+
+  // AJOUTÉ - Variables pour les services
+  var selectedServiceModel = Rxn<ServiceModel>();
+  var availableServices = <ServiceModel>[].obs;
+  var showServicesOnMap = false.obs;
+  var comesFromDriversList = false.obs;
+
+  // Variables pour l'autocomplétion
   var departureSuggestions = <AddressSuggestion>[].obs;
   var destinationSuggestions = <AddressSuggestion>[].obs;
   var showDepartureSuggestions = false.obs;
   var showDestinationSuggestions = false.obs;
   var isSearchingDeparture = false.obs;
   var isSearchingDestination = false.obs;
-  
+
   MapController? mapController;
-  
-  // Services disponibles
-  final List<String> availableServices = [
-    'Livraison',
-    'Moto-taxi',
-    'Moto-colis'
-  ];
 
   @override
   void onInit() {
     super.onInit();
     mapController = MapController();
     _setupTextControllerListeners();
+    _handleNavigationArguments();
+    _loadDefaultServices();
+  }
+
+  void _handleNavigationArguments() {
+    final arguments = Get.arguments as Map<String, dynamic>?;
+    if (arguments != null) {
+      if (arguments.containsKey('driverId') || arguments.containsKey('driverName')) {
+        comesFromDriversList.value = true;
+        showServicesOnMap.value = false;
+        selectedService.value = 'Livraison';
+        print('Navigation depuis DriversListFullView - Services cachés');
+      } else if (arguments.containsKey('selectedService')) {
+        comesFromDriversList.value = false;
+        showServicesOnMap.value = true;
+        final serviceData = arguments['selectedService'] as ServiceModel;
+        selectedServiceModel.value = serviceData;
+        selectedService.value = serviceData.displayName;
+        print('Navigation depuis HomeView avec service: ${serviceData.displayName}');
+      }
+    } else {
+      comesFromDriversList.value = false;
+      showServicesOnMap.value = true;
+    }
+  }
+
+  void _loadDefaultServices() {
+    if (availableServices.isEmpty) {
+      availableServices.value = [
+        ServiceModel(id: 1, libelle: 'moto-livraison', photo: '', createdAt: DateTime.now(), updatedAt: DateTime.now()),
+        ServiceModel(id: 2, libelle: 'moto-taxi', photo: '', createdAt: DateTime.now(), updatedAt: DateTime.now()),
+        ServiceModel(id: 3, libelle: 'moto-bagage', photo: '', createdAt: DateTime.now(), updatedAt: DateTime.now()),
+      ];
+      if (showServicesOnMap.value && selectedServiceModel.value == null) {
+        selectedServiceModel.value = availableServices.first;
+        selectedService.value = availableServices.first.displayName;
+      }
+    }
+  }
+
+  void selectServiceFromMap(ServiceModel service) {
+    selectedServiceModel.value = service;
+    selectedService.value = service.displayName;
+    Get.showSnackbar(GetSnackBar(
+      message: 'Service ${service.displayName} sélectionné',
+      duration: const Duration(seconds: 1),
+      backgroundColor: const Color(0xFF10B981),
+      borderRadius: 8,
+      margin: const EdgeInsets.all(16),
+      snackPosition: SnackPosition.TOP,
+      icon: const Icon(Icons.check_circle, color: Colors.white),
+    ));
   }
 
   void _setupTextControllerListeners() {
     departureController.addListener(() {
-      // Annuler le timer précédent
       _departureDebounce?.cancel();
-      
-      // Démarrer un nouveau timer (debouncing)
       _departureDebounce = Timer(const Duration(milliseconds: 500), () {
         if (departureController.text.length > 2) {
           _searchAddresses(departureController.text, true);
@@ -66,15 +119,12 @@ class AddressSearchController extends GetxController {
           departureSuggestions.clear();
         }
       });
-      
+      departureAddress.value = departureController.text; // Mise à jour en temps réel
       _validateAddresses();
     });
-    
+
     destinationController.addListener(() {
-      // Annuler le timer précédent
       _destinationDebounce?.cancel();
-      
-      // Démarrer un nouveau timer (debouncing)
       _destinationDebounce = Timer(const Duration(milliseconds: 500), () {
         if (destinationController.text.length > 2) {
           _searchAddresses(destinationController.text, false);
@@ -83,92 +133,89 @@ class AddressSearchController extends GetxController {
           destinationSuggestions.clear();
         }
       });
-      
+      destinationAddress.value = destinationController.text; // Mise à jour en temps réel
       _validateAddresses();
     });
 
-    // Listeners pour le focus
+    departurePhoneController.addListener(() {
+      departurePhone.value = departurePhoneController.text;
+      _validateAddresses();
+    });
+
+    destinationPhoneController.addListener(() {
+      destinationPhone.value = destinationPhoneController.text;
+      _validateAddresses();
+    });
+
     departureFocusNode.addListener(() {
       if (!departureFocusNode.hasFocus) {
-        // Masquer les suggestions après un délai
         Future.delayed(const Duration(milliseconds: 200), () {
           showDepartureSuggestions.value = false;
         });
+      } else {
+        if (departureController.text.length > 2) {
+          showDepartureSuggestions.value = true;
+        }
       }
     });
 
     destinationFocusNode.addListener(() {
       if (!destinationFocusNode.hasFocus) {
-        // Masquer les suggestions après un délai
         Future.delayed(const Duration(milliseconds: 200), () {
           showDestinationSuggestions.value = false;
         });
+      } else {
+        if (destinationController.text.length > 2) {
+          showDestinationSuggestions.value = true;
+        }
       }
     });
   }
 
-  // Recherche d'adresses avec Nominatim (OpenStreetMap)
   Future<void> _searchAddresses(String query, bool isDeparture) async {
-    if (isDeparture) {
-      isSearchingDeparture.value = true;
-    } else {
-      isSearchingDestination.value = true;
-    }
-
+    if (isDeparture) isSearchingDeparture.value = true;
+    else isSearchingDestination.value = true;
     try {
-      // Recherche centrée sur Dakar
       final response = await http.get(
         Uri.parse(
-          'https://nominatim.openstreetmap.org/search?'
-          'q=${Uri.encodeComponent(query)}&'
-          'format=json&'
-          'addressdetails=1&'
-          'limit=5&'
-          'countrycodes=sn&' // Limiter au Sénégal
-          'bounded=1&'
-          'viewbox=-17.5,-14.6,-17.4,-14.8' // Bbox autour de Dakar
+          'https://nominatim.openstreetmap.org/search?q=${Uri.encodeComponent(query)}&format=jsonv2&addressdetails=1&limit=5&countrycodes=sn',
         ),
-        headers: {
-          'User-Agent': 'DemnaaApp/1.0',
-        },
+        headers: {'User-Agent': 'DemnaaApp/1.0'},
       );
-
+      print(response.body);
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
         final suggestions = data.map((item) => AddressSuggestion(
-          displayName: item['display_name'] ?? '',
-          lat: double.parse(item['lat']),
-          lon: double.parse(item['lon']),
-          address: _formatAddress(item),
-        )).toList();
+              displayName: item['display_name'] ?? '',
+              lat: double.parse(item['lat']),
+              lon: double.parse(item['lon']),
+              address: _formatAddress(item),
+            )).toList();
 
-        if (isDeparture) {
+      if (isDeparture) {
           departureSuggestions.value = suggestions;
+          // CORRECTION : Afficher les suggestions dès qu'on a des résultats.
           showDepartureSuggestions.value = suggestions.isNotEmpty;
         } else {
           destinationSuggestions.value = suggestions;
+          // CORRECTION : Afficher les suggestions dès qu'on a des résultats.
           showDestinationSuggestions.value = suggestions.isNotEmpty;
         }
       }
     } catch (e) {
       print('Erreur lors de la recherche d\'adresses: $e');
     } finally {
-      if (isDeparture) {
-        isSearchingDeparture.value = false;
-      } else {
-        isSearchingDestination.value = false;
-      }
+      if (isDeparture) isSearchingDeparture.value = false;
+      else isSearchingDestination.value = false;
     }
   }
 
   String _formatAddress(Map<String, dynamic> item) {
     final address = item['address'] ?? {};
     List<String> parts = [];
-    
     if (address['road'] != null) parts.add(address['road']);
     if (address['suburb'] != null) parts.add(address['suburb']);
     if (address['city'] != null) parts.add(address['city']);
-    
     return parts.isNotEmpty ? parts.join(', ') : item['display_name'] ?? '';
   }
 
@@ -177,14 +224,8 @@ class AddressSearchController extends GetxController {
     departureAddress.value = suggestion.address;
     departureLocation.value = LatLng(suggestion.lat, suggestion.lon);
     showDepartureSuggestions.value = false;
-    
-    // Retirer le focus du champ
     departureFocusNode.unfocus();
-    
-    // Centrer la carte sur l'adresse sélectionnée
     mapController?.move(LatLng(suggestion.lat, suggestion.lon), 16.0);
-    
-    // Vibration légère pour confirmer la sélection
     _showSelectionFeedback('Adresse de départ définie');
   }
 
@@ -193,62 +234,44 @@ class AddressSearchController extends GetxController {
     destinationAddress.value = suggestion.address;
     destinationLocation.value = LatLng(suggestion.lat, suggestion.lon);
     showDestinationSuggestions.value = false;
-    
-    // Retirer le focus du champ
     destinationFocusNode.unfocus();
-    
-    // Centrer la carte sur l'adresse sélectionnée
     mapController?.move(LatLng(suggestion.lat, suggestion.lon), 16.0);
-    
-    // Vibration légère pour confirmer la sélection
     _showSelectionFeedback('Adresse de destination définie');
   }
 
   void _showSelectionFeedback(String message) {
-    Get.showSnackbar(
-      GetSnackBar(
-        message: message,
-        duration: const Duration(seconds: 1),
-        backgroundColor: const Color(0xFF10B981),
-        borderRadius: 8,
-        margin: const EdgeInsets.all(16),
-        snackPosition: SnackPosition.TOP,
-        icon: const Icon(
-          Icons.check_circle,
-          color: Colors.white,
-        ),
-      ),
-    );
+    Get.showSnackbar(GetSnackBar(
+      message: message,
+      duration: const Duration(seconds: 1),
+      backgroundColor: const Color(0xFF10B981),
+      borderRadius: 8,
+      margin: const EdgeInsets.all(16),
+      snackPosition: SnackPosition.TOP,
+      icon: const Icon(Icons.check_circle, color: Colors.white),
+    ));
   }
 
   void _validateAddresses() {
-    // Validation des adresses saisies
-    if (departureController.text.isNotEmpty && destinationController.text.isNotEmpty) {
-      // Activer le bouton commander
+    if (departureController.text.isNotEmpty &&
+        destinationController.text.isNotEmpty &&
+        departurePhoneController.text.isNotEmpty &&
+        destinationPhoneController.text.isNotEmpty) {
+      // Activer le bouton commander (à implémenter dans la vue)
     }
   }
 
-  // Récupération de l'adresse par géocodage inverse
   Future<void> reverseGeocode(LatLng point, bool isDeparture) async {
     try {
       final response = await http.get(
         Uri.parse(
-          'https://nominatim.openstreetmap.org/reverse?'
-          'format=json&'
-          'lat=${point.latitude}&'
-          'lon=${point.longitude}&'
-          'zoom=18&'
-          'addressdetails=1'
+          'https://nominatim.openstreetmap.org/reverse?format=json&lat=${point.latitude}&lon=${point.longitude}&zoom=18&addressdetails=1',
         ),
-        headers: {
-          'User-Agent': 'DemnaaApp/1.0',
-        },
+        headers: {'User-Agent': 'DemnaaApp/1.0'},
       );
-
+      print(response.body);
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final address = _formatAddress(data);
-        
         if (isDeparture) {
           departureController.text = address;
           departureAddress.value = address;
@@ -264,12 +287,10 @@ class AddressSearchController extends GetxController {
     }
   }
 
-  // Changer le service sélectionné
   void changeService(String service) {
     selectedService.value = service;
   }
 
-  // Ajouter un arrêt
   void addStop() {
     Get.snackbar(
       'Arrêt ajouté',
@@ -280,7 +301,6 @@ class AddressSearchController extends GetxController {
     );
   }
 
-  // Actions pour les icônes (domicile, favoris, etc.)
   void onIconTap(String iconType) {
     switch (iconType) {
       case 'home':
@@ -306,16 +326,11 @@ class AddressSearchController extends GetxController {
     );
   }
 
-  void _showFavorites() {
-    // Naviguer vers les favoris ou ouvrir un modal
-  }
+  void _showFavorites() {}
 
-  void _showHistory() {
-    // Afficher l'historique des adresses
-  }
+  void _showHistory() {}
 
   void _getCurrentLocation() {
-    // Obtenir la position GPS actuelle
     Get.snackbar(
       'Localisation',
       'Récupération de votre position...',
@@ -323,32 +338,31 @@ class AddressSearchController extends GetxController {
     );
   }
 
-  // Commander la course
   Future<void> commander() async {
-    if (departureController.text.isEmpty || destinationController.text.isEmpty) {
+    if (departureController.text.isEmpty ||
+        destinationController.text.isEmpty ||
+        departurePhoneController.text.isEmpty ||
+        destinationPhoneController.text.isEmpty) {
       Get.snackbar(
         'Erreur',
-        'Veuillez remplir les adresses de départ et d\'arrivée',
+        'Veuillez remplir tous les champs requis',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red.withOpacity(0.8),
         colorText: Colors.white,
       );
       return;
     }
-
     isLoading.value = true;
-
     try {
-      // Simulation d'appel API
       await Future.delayed(const Duration(seconds: 2));
-      
-      // Naviguer vers l'écran de suivi
       Get.toNamed('/delivery-tracking', arguments: {
         'departure': departureController.text,
         'destination': destinationController.text,
+        'departurePhone': departurePhoneController.text,
+        'destinationPhone': destinationPhoneController.text,
         'service': selectedService.value,
+        'serviceModel': selectedServiceModel.value,
       });
-      
     } catch (e) {
       Get.snackbar(
         'Erreur',
@@ -362,42 +376,35 @@ class AddressSearchController extends GetxController {
     }
   }
 
-  // Méthodes de carte
   void onMapTap(LatLng point) {
     currentLocation.value = point;
-    
-    // Afficher un dialog pour choisir si c'est le départ ou la destination
-    Get.dialog(
-      AlertDialog(
-        title: const Text('Définir cette position'),
-        content: const Text('Que voulez-vous faire avec cette position ?'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              reverseGeocode(point, true);
-              Get.back();
-            },
-            child: const Text('Départ'),
-          ),
-          TextButton(
-            onPressed: () {
-              reverseGeocode(point, false);
-              Get.back();
-            },
-            child: const Text('Destination'),
-          ),
-          TextButton(
-            onPressed: () => Get.back(),
-            child: const Text('Annuler'),
-          ),
-        ],
-      ),
-    );
+    Get.dialog(AlertDialog(
+      title: const Text('Définir cette position'),
+      content: const Text('Que voulez-vous faire avec cette position ?'),
+      actions: [
+        TextButton(
+          onPressed: () {
+            reverseGeocode(point, true);
+            Get.back();
+          },
+          child: const Text('Départ'),
+        ),
+        TextButton(
+          onPressed: () {
+            reverseGeocode(point, false);
+            Get.back();
+          },
+          child: const Text('Destination'),
+        ),
+        TextButton(
+          onPressed: () => Get.back(),
+          child: const Text('Annuler'),
+        ),
+      ],
+    ));
   }
 
-  void getCurrentLocation() {
-    // Logique pour obtenir la position GPS actuelle
-  }
+  void getCurrentLocation() {}
 
   void zoomIn() {
     mapController?.move(currentLocation.value, mapController!.camera.zoom + 1);
@@ -409,21 +416,18 @@ class AddressSearchController extends GetxController {
 
   @override
   void onClose() {
-    // Nettoyer les timers
     _departureDebounce?.cancel();
     _destinationDebounce?.cancel();
-    
-    // Disposer des controllers et focus nodes
     departureController.dispose();
     destinationController.dispose();
+    departurePhoneController.dispose();
+    destinationPhoneController.dispose();
     departureFocusNode.dispose();
     destinationFocusNode.dispose();
-    
     super.onClose();
   }
 }
 
-// Classe pour les suggestions d'adresses
 class AddressSuggestion {
   final String displayName;
   final double lat;

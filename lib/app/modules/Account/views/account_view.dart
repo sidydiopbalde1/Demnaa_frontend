@@ -30,6 +30,15 @@ class AccountView extends GetView<AccountController> {
                   
                   const SizedBox(height: 16),
                   
+                  // Mes Conducteurs - séparé
+                  DemNaaMenuItem(
+                    icon: Icons.group,
+                    title: 'Mes Conducteurs',
+                    onTap: controller.goToDrivers,
+                  ),
+                  
+                  const SizedBox(height: 16),
+                  
                   // Bloc blanc avec tous les menu items regroupés
                   DemNaaCard(
                     padding: EdgeInsets.zero, // Pas de padding pour que les items touchent les bords
@@ -118,7 +127,7 @@ class AccountView extends GetView<AccountController> {
   Widget _buildDivider() {
     return Container(
       height: 1,
-      margin: const EdgeInsets.only(left: 56), // Aligné avec le texte (20 + 20 + 16)
+      margin: const EdgeInsets.only(left: 56),
       color: Colors.grey[200],
     );
   }

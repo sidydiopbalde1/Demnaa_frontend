@@ -7,7 +7,8 @@ class Config {
   
   // 🚀 URL de production (votre backend déployé)
   //static const String _apiUrlProd = "https://votre-backend.herokuapp.com"; // Remplacez par votre URL
-   static const String _apiUrlProd = "https://demmna-backend-1-0-6.onrender.com/api"; // Ou Render
+  // static const String _apiUrlProd = "https://demmna-backend-1-0-6.onrender.com/api"; // Ou Render
+   static const String _apiUrlProd = "https://demnaa.onrender.com/api"; // Ou Render (ancienne)
  
 
   // 🔄 Contrôle de l'environnement

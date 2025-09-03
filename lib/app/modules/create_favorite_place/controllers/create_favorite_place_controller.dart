@@ -116,6 +116,7 @@ class FavoritePlaceController extends GetxController {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body) as List;
         searchedAddresses.value = data.cast<Map<String, dynamic>>();
+        print(searchedAddresses.value);
       } else if (response.statusCode == 429) {
         searchedAddresses.clear();
         Get.snackbar(

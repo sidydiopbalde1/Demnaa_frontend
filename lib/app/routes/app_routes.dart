@@ -4,6 +4,7 @@ part of 'app_pages.dart';
 abstract class Routes {
   Routes._();
   static const HOME = _Paths.HOME;
+  static const DEMARRAGE = _Paths.DEMARRAGE;
   static const DELIVERY = _Paths.DELIVERY;
   static const REVERSE_GEOCODING = _Paths.REVERSE_GEOCODING;
   static const CREATE_FAVORITE_PLACE = _Paths.CREATE_FAVORITE_PLACE;
@@ -15,6 +16,7 @@ abstract class Routes {
   static const ACCOUNT = _Paths.ACCOUNT;
   static const PROFIL = _Paths.PROFIL;
   static const DRIVERS = _Paths.DRIVERS;
+  static const DRIVERS_EMPTY = _Paths.DRIVERS_EMPTY;
   static const DRIVERS_LIST = _Paths.DRIVERS_LIST;
   static const MODIFY_NUMBER = _Paths.MODIFY_NUMBER;
   static const BECOME_DRIVER = _Paths.BECOME_DRIVER;
@@ -22,11 +24,19 @@ abstract class Routes {
   static const SETTINGS = _Paths.SETTINGS;
   static const INFORMATIONS = _Paths.INFORMATIONS;
   static const ADD_DRIVER = _Paths.ADD_DRIVER;
+  static const LANGUAGE_SETTINGS = _Paths.LANGUAGE_SETTINGS;
+  static const THEME_SETTINGS = _Paths.THEME_SETTINGS;
+  static const HISTORY = _Paths.HISTORY;
+  // static const CONTACT = _Paths.CONTACT;
+  static const MOTO_TAXI_ORDER = _Paths.MOTO_TAXI_ORDER;
+  static const AUTH = _Paths.AUTH;
+  static const REGISTER = _Paths.REGISTER;
 }
 
 abstract class _Paths {
   _Paths._();
   static const HOME = '/home';
+  static const DEMARRAGE = '/demarrage';  
   static const DELIVERY = '/delivery';
   static const REVERSE_GEOCODING = '/reverse-geocoding';
   static const CREATE_FAVORITE_PLACE = '/create-favorite-place';
@@ -38,6 +48,7 @@ abstract class _Paths {
   static const ACCOUNT = '/account';
   static const PROFIL = '/profil';
   static const DRIVERS = '/drivers';
+  static const DRIVERS_EMPTY = '/drivers-empty';
   static const DRIVERS_LIST = '/drivers-list';
   static const MODIFY_NUMBER = '/modify-number';
   static const BECOME_DRIVER = '/become-driver';
@@ -45,4 +56,11 @@ abstract class _Paths {
   static const SETTINGS = '/settings';
   static const INFORMATIONS = '/informations';
   static const ADD_DRIVER = '/add-driver';
+  static const LANGUAGE_SETTINGS = '/language-settings';
+  static const THEME_SETTINGS = '/theme-settings';
+  static const HISTORY = '/history';
+  // static const CONTACT = '/contact';
+  static const MOTO_TAXI_ORDER = '/moto-taxi-order';
+  static const AUTH = '/auth';
+  static const REGISTER = '/register';
 }

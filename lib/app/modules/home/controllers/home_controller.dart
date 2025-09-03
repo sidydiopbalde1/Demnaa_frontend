@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:demnaa_front/app/modules/adresse_search/views/adresse_search_view.dart';
 
-
 class HomeController extends GetxController with GetTickerProviderStateMixin {
   final ServiceService _serviceService = Get.find<ServiceService>();
 
@@ -53,15 +52,13 @@ class HomeController extends GetxController with GetTickerProviderStateMixin {
       servicesError.value = '';
 
       final servicesList = await _serviceService.getServices();
-
-      // Correction : utiliser .value = au lieu de .assignAll()
       services.value = servicesList;
 
-      print('🔥 Services chargés: ${services.length}');
+      print('Services chargés: ${services.length}');
 
     } catch (e) {
       servicesError.value = e.toString();
-      print('❌ Erreur lors du chargement des services: $e');
+      print('Erreur lors du chargement des services: $e');
 
       // Charger les services par défaut en cas d'erreur
       services.value = _serviceService.getDefaultServices();
@@ -84,91 +81,47 @@ class HomeController extends GetxController with GetTickerProviderStateMixin {
     await _loadServices();
   }
 
-  // Gérer le tap sur un service
-// Dans votre contrôleur (HomeController ou le contrôleur approprié)
-
-void onServiceTap(ServiceModel service) {
-  // Vérifier le type de service pour la redirection
-  switch (service.libelle.toLowerCase()) {
-    case 'moto-livraison':
-    case 'delivery':
-      // Rediriger vers la page AdresseSearch
-      Get.to(() => AddressSearchView());
-      break;
-      
-    case 'commande':
-    case 'order':
-      // Exemple pour d'autres services
-      // Get.to(() => CommandePage());
-      _showServiceNotification('Commande', 'Fonctionnalité en cours de développement');
-      break;
-      
-    case 'réservation':
-    case 'reservation':
-      // Get.to(() => ReservationPage());
-      _showServiceNotification('Réservation', 'Fonctionnalité en cours de développement');
-      break;
-      
-    case 'support':
-    case 'aide':
-      // Get.to(() => SupportPage());
-      _showServiceNotification('Support', 'Contactez-nous au +221 XX XXX XX XX');
-      break;
-      
-    default:
-      // Action par défaut pour les services non définis
-      _showServiceNotification(
-        service.displayName, 
-        'Service sélectionné: ${service.displayName}'
-      );
+  // Gérer le tap sur un service - MODIFIÉ
+  // void onServiceTap(ServiceModel service) {
+  //   // Passer le service sélectionné à AddressSearchView
+  //   Get.to(() => const AddressSearchView(), arguments: {
+  //     'selectedService': service,
+  //   });
+  // }
+  void onServiceTap(ServiceModel service) {
+    // Navigation spécifique selon le type de service
+    if (service.libelle.contains('taxi')) {
+      // Pour Moto-taxi, aller vers DestinationView
+      Get.toNamed('/moto-taxi-order', arguments: {
+        'selectedService': service.displayName,
+      });
+    } else {
+      // Pour les autres services (Livraison, Bagage), aller vers AddressSearchView
+      Get.to(() => const AddressSearchView(), arguments: {
+        'selectedService': service,
+      });
+    }
   }
-}
 
-// Méthode helper pour afficher des notifications
-void _showServiceNotification(String title, String message) {
-  Get.snackbar(
-    title,
-    message,
-    snackPosition: SnackPosition.BOTTOM,
-    duration: const Duration(seconds: 3),
-    backgroundColor: Get.theme.primaryColor.withOpacity(0.9),
-    colorText: Colors.white,
-    borderRadius: 10,
-    margin: const EdgeInsets.all(16),
-    icon: const Icon(
-      Icons.info_outline,
-      color: Colors.white,
-    ),
-  );
-}
+  // Méthode helper pour afficher des notifications
+  void _showServiceNotification(String title, String message) {
+    Get.snackbar(
+      title,
+      message,
+      snackPosition: SnackPosition.BOTTOM,
+      duration: const Duration(seconds: 3),
+      backgroundColor: Get.theme.primaryColor.withOpacity(0.9),
+      colorText: Colors.white,
+      borderRadius: 10,
+      margin: const EdgeInsets.all(16),
+      icon: const Icon(
+        Icons.info_outline,
+        color: Colors.white,
+      ),
+    );
+  }
 
-// Alternative: Si vous préférez utiliser des routes nommées
-// void onServiceTapWithNamedRoutes(ServiceModel service) {
-//   switch (service.libelle.toLowerCase()) {
-//     case 'moto-livraison':
-//     case 'delivery':
-//       Get.toNamed('/adresse-search');
-//       break;
-      
-//     case 'moto-taxi':
-//     case 'order':
-//       Get.toNamed('/commande');
-//       break;
-      
-//     case 'réservation':
-//     case 'reservation':
-//       Get.toNamed('/reservation');
-//       break;
-      
-//     default:
-//       _showServiceNotification(
-//         service.displayName, 
-//         'Service: ${service.displayName}'
-//       );
-//   }
-// }
-
-  // Méthodes d'animation (inchangées)
+  // Méthodes d'animation
   void _initializeAnimations() {
     headerAnimationController = AnimationController(
       duration: const Duration(milliseconds: 800),
