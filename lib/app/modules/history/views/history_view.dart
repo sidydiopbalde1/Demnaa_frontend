@@ -9,7 +9,7 @@ class HistoryView extends GetView<HistoryController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           children: [
@@ -328,7 +328,7 @@ class HistoryView extends GetView<HistoryController> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected ? const Color(0xFF4A90E2) : Colors.grey[200],
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(10),
         ),
         child: Text(
           label,
@@ -344,89 +344,96 @@ class HistoryView extends GetView<HistoryController> {
 
   Widget _buildHistoryItem(HistoryItem item) {
     return GestureDetector(
-      onTap: () => _showHistoryDetail(item),
-    child:Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: item.getBackgroundColor(),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Colors.grey.withOpacity(0.1),
-        ),
-      ),
-      child: Row(
-        children: [
-          const SizedBox(width: 12),
+        onTap: () => _showHistoryDetail(item),
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 10),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            // color: item.getBackgroundColor(),
+            color: const Color(0xFFE8F5E8),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: Colors.grey.withOpacity(0.1),
+            ),
+          ),
+          child: Row(
+            children: [
+              const SizedBox(width: 5),
 
-          // Contenu de l'historique avec date
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  item.title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                  ),
+              // Contenu de l'historique avec date
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          item.title + ' à ',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 14,
+                            color: const Color.fromARGB(255, 3, 76, 136),
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          item.date.hour.toString().padLeft(2, '0') +
+                              'h' +
+                              item.date.minute.toString().padLeft(2, '0'),
+                          style: TextStyle(
+                            color: const Color.fromARGB(255, 3, 76, 136),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 2),
+                    if (item.status != 'Annulée')
+                      Text(
+                        item.subtitle,
+                        style: TextStyle(
+                          color: const Color.fromARGB(255, 3, 76, 136),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    const SizedBox(height: 6),
+                    // Status
+                    if (item.status.isNotEmpty)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
+                        child: Text(
+                          item.status,
+                          style: TextStyle(
+                            color: item.getStatusColor(),
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  item.subtitle,
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 12,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  item.getFormattedDate(),
-                  style: TextStyle(
-                    color: Colors.grey[500],
-                    fontSize: 11,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                  // Status
-           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: item.getStatusColor().withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              item.status,
-              style: TextStyle(
-                color: item.getStatusColor(),
-                fontSize: 10,
-                fontWeight: FontWeight.w600,
               ),
-            ),
+              // Icône du service
+              Container(
+                width: 40,
+                height: 40,
+                // decoration: BoxDecoration(
+                //   color: item.getIconBackgroundColor(),
+                //   borderRadius: BorderRadius.circular(8),
+                // ),
+                child: Image(
+                  image: item.getServiceIcon().image,
+                  // color: item.getIconColor(),
+                ),
+              ),
+            ],
           ),
-              ],
-            ),
-          ),
-           // Icône du service
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: item.getIconBackgroundColor(),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(
-              item.getServiceIcon(),
-              color: item.getIconColor(),
-              size: 20,
-            ),
-          ),
-         
-        ],
-      ),
-    )
-    );
+        ));
   }
+
   void _showHistoryDetail(HistoryItem item) {
     Get.dialog(
       Dialog(
@@ -435,205 +442,176 @@ class HistoryView extends GetView<HistoryController> {
         ),
         child: Container(
           width: Get.width * 0.9,
-          padding: EdgeInsets.zero,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Header avec carte
-              Container(
-                height: 200,
-                decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
+              // === HEADER CARTE + AVATAR SUPERPOSÉ ===
+              // === HEADER CARTE + AVATAR SUPERPOSÉ ===
+              Stack(
+                clipBehavior:
+                    Clip.none, // ⚡ important pour que l’avatar dépasse
+                children: [
+                  // Carte de fond
+                  Container(
+                    height: 120,
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20),
+                      ),
+                      image: const DecorationImage(
+                        image: AssetImage("assets/images/carte_map.png"),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   ),
-                  color: Colors.grey[200],
-                ),
-                child: Stack(
-                  children: [
-                    // Image de carte (placeholder)
-                    Positioned.fill(
-                      child: ClipRRect(
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(20),
-                          topRight: Radius.circular(20),
+
+                  // Avatar en premier plan
+                  Positioned(
+                    bottom: -30, // chevauche vers le bas
+                    right: 16,
+                    child: Material(
+                      // ⚡ permet d’avoir un vrai "z-index" devant
+                      elevation: 10,
+                      shape: const CircleBorder(),
+                      child: CircleAvatar(
+                        radius: 34,
+                        backgroundColor: Colors.white,
+                        child: CircleAvatar(
+                          radius: 30,
+                          backgroundImage:
+                              const AssetImage("assets/images/mamadou.png"),
+                          onBackgroundImageError: (_, __) => const Icon(
+                            Icons.person,
+                            color: Colors.blue,
+                            size: 30,
+                          ),
                         ),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [Colors.blue[100]!, Colors.blue[50]!],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+              // === INFOS COURSE ===
+              Container(
+                color: Colors.white,
+                padding: const EdgeInsets.fromLTRB(
+                    16, 40, 16, 12), // Top padding pour l'avatar
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Infos à gauche
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "Livraison",
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
-                          child: const Center(
-                            child: Icon(
-                              Icons.map,
-                              size: 60,
+                          const SizedBox(height: 4),
+                          const Text(
+                            "77 893 34 20",
+                            style: TextStyle(
+                              fontSize: 14,
                               color: Colors.blue,
                             ),
                           ),
-                        ),
+                          const SizedBox(height: 2),
+                          const Text(
+                            "AA167",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.blue,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            "Course à ${item.date.hour.toString().padLeft(2, '0')}h${item.date.minute.toString().padLeft(2, '0')}",
+                            style: const TextStyle(
+                              fontSize: 13,
+                              color: Colors.blue,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    
-                    // Avatar conducteur
-                    Positioned(
-                      bottom: 16,
-                      right: 16,
-                      child: Container(
-                        width: 60,
-                        height: 60,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: ClipOval(
-                          child: Image.asset(
-                            'assets/images/driver_avatar.png',
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return const Icon(
-                                Icons.person,
-                                color: Colors.blue,
-                                size: 30,
-                              );
-                            },
+
+                    // Nom + icône service à droite
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        const Text(
+                          "Mamadou",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.blue,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
-                      ),
+                        const SizedBox(height: 8),
+                        Image(
+                            image: item.getServiceIcon().image,
+                            width: 40,
+                            height: 40),
+                      ],
                     ),
                   ],
                 ),
               ),
-              
-              // Contenu du dialog
+
+              Divider(height: 1, color: Colors.grey[300]),
+
+              // === ADRESSES ===
               Padding(
-                padding: const EdgeInsets.all(20),
+              
+                padding: const EdgeInsets.all(16),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment:
+                      CrossAxisAlignment.center, // ⚡ centre horizontalement
                   children: [
-                    // Informations de la course
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Livraison',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.grey[800],
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                '77 893 34 20',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.grey[600],
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                'AA157',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey[500],
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Course • à 18h13',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey[600],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        
-                        // Nom du conducteur et icône
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              'Mamadou',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.grey[800],
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Container(
-                              width: 40,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                color: Colors.blue.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: const Icon(
-                                Icons.local_shipping,
-                                color: Colors.blue,
-                                size: 20,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+                    _buildAddressRow(
+                      label: "Départ",
+                      address: "Yoff RUE 455",
+                      color: Colors.red,
                     ),
-                    
-                    const SizedBox(height: 24),
-                    
-                    // Points de départ et arrivée
-                    Column(
-                      children: [
-                        _buildAddressRow(
-                          label: 'Départ',
-                          address: 'Yoff RUE 455',
-                          color: Colors.red,
-                        ),
-                        const SizedBox(height: 16),
-                        _buildAddressRow(
-                          label: 'Arrivée',
-                          address: 'Parcelles U26',
-                          color: Colors.green,
-                        ),
-                      ],
+                    const SizedBox(height: 16),
+                    Container(
+                      width: 220,
+                      height: 1,
+                      color: Colors.black,
                     ),
-                    
+                    const SizedBox(height: 16),
+                    _buildAddressRow(
+                      label: "Arrivée",
+                      address: "Parcelles U26",
+                      color: Colors.red,
+                    ),
                     const SizedBox(height: 24),
-                    
-                    // Prix de la commande
                     Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
                       decoration: BoxDecoration(
-                        color: Colors.grey[100],
+                        color: Color(0xFFE8F5E8),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: const Text(
-                        'Prix de la commande : 15 000XOF',
+                        "Prix de la commande : 15 000 XOF",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black87,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue,
                         ),
                       ),
                     ),
                   ],
                 ),
-              ),
+              )
             ],
           ),
         ),
@@ -653,7 +631,7 @@ class HistoryView extends GetView<HistoryController> {
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
             border: Border.all(color: Colors.grey[300]!),
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(10),
           ),
           child: Text(
             label,
@@ -666,16 +644,34 @@ class HistoryView extends GetView<HistoryController> {
           ),
         ),
         const SizedBox(width: 16),
-        Expanded(
+
+        Container(
+          width: 120,
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey[300]!),
+            borderRadius: BorderRadius.circular(10),
+          ),
           child: Text(
             address,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: Colors.black87,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.black,
+              // fontWeight: FontWeight.w500,
             ),
           ),
         ),
+        // Expanded(
+        //   child: Text(
+        //     address,
+        //     style: const TextStyle(
+        //       fontSize: 14,
+        //       fontWeight: FontWeight.w500,
+        //       color: Colors.black87,
+        //     ),
+        //   ),
+        // ),
       ],
     );
   }

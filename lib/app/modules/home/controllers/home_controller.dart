@@ -1,4 +1,5 @@
 import 'package:demnaa_front/app/models/services_model.dart';
+import 'package:demnaa_front/app/modules/adresse_search/controllers/adresse_search_controller.dart';
 import 'package:demnaa_front/app/modules/create_favorite_place/controllers/create_favorite_place_controller.dart';
 import 'package:demnaa_front/app/services/demnaa_services_service.dart';
 import 'package:flutter/material.dart';
@@ -96,6 +97,9 @@ class HomeController extends GetxController with GetTickerProviderStateMixin {
         'selectedService': service.displayName,
       });
     } else {
+       if (!Get.isRegistered<AddressSearchController>()) {
+        Get.put(AddressSearchController());
+      }
       // Pour les autres services (Livraison, Bagage), aller vers AddressSearchView
       Get.to(() => const AddressSearchView(), arguments: {
         'selectedService': service,

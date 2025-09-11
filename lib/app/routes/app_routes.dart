@@ -31,12 +31,15 @@ abstract class Routes {
   static const MOTO_TAXI_ORDER = _Paths.MOTO_TAXI_ORDER;
   static const AUTH = _Paths.AUTH;
   static const REGISTER = _Paths.REGISTER;
+  static const PAYMENT_SELECTION = _Paths.PAYMENT_SELECTION;
+  static const FINAL_DELIVERY_TRACKING = _Paths.FINAL_DELIVERY_TRACKING;
+  static const DELIVERY_SUCCESS = _Paths.DELIVERY_SUCCESS;
 }
 
 abstract class _Paths {
   _Paths._();
   static const HOME = '/home';
-  static const DEMARRAGE = '/demarrage';  
+  static const DEMARRAGE = '/demarrage';
   static const DELIVERY = '/delivery';
   static const REVERSE_GEOCODING = '/reverse-geocoding';
   static const CREATE_FAVORITE_PLACE = '/create-favorite-place';
@@ -63,4 +66,7 @@ abstract class _Paths {
   static const MOTO_TAXI_ORDER = '/moto-taxi-order';
   static const AUTH = '/auth';
   static const REGISTER = '/register';
+  static const PAYMENT_SELECTION = '/payment-selection';
+  static const FINAL_DELIVERY_TRACKING = '/final-delivery-tracking';
+  static const DELIVERY_SUCCESS = '/delivery-success';
 }

@@ -106,7 +106,7 @@ class HistoryController extends GetxController {
         id: '1',
         title: 'Moto-taxi 6 Bl. 13',
         subtitle: '2600FCF Rue G424-44, Songhattan',
-        status: 'Annulée',
+        status: 'terminée',
         serviceType: 'Moto-taxi',
         date: DateTime.now().subtract(const Duration(hours: 2)),
         price: 2600,
@@ -115,7 +115,7 @@ class HistoryController extends GetxController {
         id: '2',
         title: 'Livraisons 6 Bl. 13',
         subtitle: '2600FCF Rue G424-44, Songhattan',
-        status: 'Annulée',
+        status: 'terminée',
         serviceType: 'Livraisons',
         date: DateTime.now().subtract(const Duration(hours: 4)),
         price: 2600,
@@ -232,16 +232,16 @@ class HistoryItem {
   }
 
   // Icône du service
-  IconData getServiceIcon() {
+  Image getServiceIcon() {
     switch (serviceType) {
       case 'Moto-taxi':
-        return Icons.motorcycle;
+        return Image.asset("assets/images/moto_taxi.png");
       case 'Livraisons':
-        return Icons.local_shipping;
+        return Image.asset("assets/images/moto_livraison.png");
       case 'Moto-bagage':
-        return Icons.luggage;
+        return Image.asset("assets/images/moto_bagage.png");
       default:
-        return Icons.miscellaneous_services;
+        return Image.asset("assets/images/moto_taxi.png");
     }
   }
 

@@ -17,10 +17,6 @@ class HomeBinding extends Bindings {
     // 2. ServiceService (pour récupérer les services depuis l'API)
     Get.put<ServiceService>(ServiceService(), permanent: true); // ✅ Correction ici
     
-    // 3. FavoritePlaceService (si vous l'utilisez)
-    // Get.put<FavoritePlaceService>(FavoritePlaceService(), permanent: true);
-    
-    // 🎮 Controllers (lazy loading)
     
     // 1. FavoritePlaceController
     Get.lazyPut<FavoritePlaceController>(

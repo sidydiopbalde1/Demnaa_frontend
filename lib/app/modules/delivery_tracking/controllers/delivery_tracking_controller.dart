@@ -90,39 +90,90 @@ Color getStatusColor() {
     ));
   }
 
-  void _getArguments() {
-    final arguments = Get.arguments as Map<String, dynamic>?;
-    if (arguments != null) {
-      departure.value = arguments['departure'] ?? '';
-      destination.value = arguments['destination'] ?? '';
-      serviceType.value = arguments['service'] ?? 'Livraison';
-    }
+
+
+void _getArguments() {
+  final arguments = Get.arguments as Map<String, dynamic>?;
+  if (arguments != null) {
+    departure.value = arguments['departure'] ?? '';
+    destination.value = arguments['destination'] ?? '';
+    serviceType.value = arguments['service'] ?? 'Livraison';
+    
+    // Sélectionner automatiquement le transport basé sur le service
+    _selectTransportBasedOnService(serviceType.value);
+    
+    print('Arguments reçus: $arguments');
+    print('Service détecté: ${serviceType.value}');
+    print('Transport sélectionné: ${selectedTransport.value}');
   }
+}
+
+// Nouvelle méthode pour mapper le service vers l'index de transport
+void _selectTransportBasedOnService(String service) {
+  final serviceLower = service.toLowerCase();
+  
+  if (serviceLower.contains('livraison') || serviceLower.contains('delivery')) {
+    selectedTransport.value = 0; // Index 0 = Livraison (moto_livraison.png)
+    _updateTransportDetails(0);
+  } else if (serviceLower.contains('taxi') || serviceLower.contains('moto-taxi')) {
+    selectedTransport.value = 1; // Index 1 = Taxi (moto_taxi.png)  
+    _updateTransportDetails(1);
+  } else if (serviceLower.contains('bagage') || serviceLower.contains('baggage')) {
+    selectedTransport.value = 2; // Index 2 = Bagage (moto_bagage.png)
+    _updateTransportDetails(2);
+  } else {
+    // Service par défaut si non reconnu
+    selectedTransport.value = 0;
+    _updateTransportDetails(0);
+  }
+}
+void _updateTransportDetails(int transportIndex) {
+  switch (transportIndex) {
+    case 0: // Livraison
+      price.value = 800;
+      arrivalTime.value = 3;
+      break;
+    case 1: // Taxi
+      price.value = 1200;
+      arrivalTime.value = 5;
+      break;
+    case 2: // Bagage
+      price.value = 2000;
+      arrivalTime.value = 8;
+      break;
+  }
+}
+
+// Méthode selectTransport modifiée pour utiliser la méthode helper
+void selectTransport(int index) {
+  selectedTransport.value = index;
+  _updateTransportDetails(index);
+}
 
   void _startProgressAnimation() {
     progressController.forward();
   }
 
   // Changer le moyen de transport
-  void selectTransport(int index) {
-    selectedTransport.value = index;
+  // void selectTransport(int index) {
+  //   selectedTransport.value = index;
     
-    // Ajuster le prix selon le transport
-    switch (index) {
-      case 0: // Moto
-        price.value = 800;
-        arrivalTime.value = 3;
-        break;
-      case 1: // Voiture
-        price.value = 1200;
-        arrivalTime.value = 5;
-        break;
-      case 2: // Camion
-        price.value = 2000;
-        arrivalTime.value = 8;
-        break;
-    }
-  }
+  //   // Ajuster le prix selon le transport
+  //   switch (index) {
+  //     case 0: // Moto
+  //       price.value = 800;
+  //       arrivalTime.value = 3;
+  //       break;
+  //     case 1: // Voiture
+  //       price.value = 1200;
+  //       arrivalTime.value = 5;
+  //       break;
+  //     case 2: // Camion
+  //       price.value = 2000;
+  //       arrivalTime.value = 8;
+  //       break;
+  //   }
+  // }
 
   // Valider la course
   Future<void> validateCourse() async {
@@ -132,14 +183,6 @@ Color getStatusColor() {
       // Simulation d'appel API
       await Future.delayed(const Duration(seconds: 2));
       
-      // Get.snackbar(
-      //   'Course validée',
-      //   'Votre ${transportOptions[selectedTransport.value]['name'].toLowerCase()} arrive dans ${arrivalTime.value} minutes',
-      //   snackPosition: SnackPosition.BOTTOM,
-      //   backgroundColor: Colors.green.withOpacity(0.8),
-      //   colorText: Colors.white,
-      //   duration: const Duration(seconds: 3),
-      // );
       
       // Naviguer vers l'écran de destination ou de suivi
       Get.toNamed('/destination', arguments: {
@@ -147,6 +190,10 @@ Color getStatusColor() {
         'transport': transportOptions[selectedTransport.value]['name'],
         'price': price.value,
         'arrivalTime': arrivalTime.value,
+        'departure': departure.value,
+        'destination': destination.value,
+        'destinationPhone': '784316538', // Numéro fictif pour test
+        'fromHome': Get.currentRoute == '/home', // Déterminer si vient de home
       });
       
     } catch (e) {

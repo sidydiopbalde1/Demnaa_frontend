@@ -175,163 +175,164 @@ class DestinationView extends GetView<DestinationController> {
     );
   }
 
-  Widget _buildRouteInfo() {
-    return Column(
-      children: [
-        // Départ avec layout horizontal
-        Row(
-          children: [
-            // Boîte "Départ"
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.grey[100],
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.grey[300]!),
-              ),
-              child: const Text(
-                'Départ',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Color(0xFFDC2626),
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+Widget _buildRouteInfo() {
+  return Column(
+    children: [
+      // Départ avec layout horizontal
+      Row(
+        children: [
+          // Boîte "Départ"
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.grey[50],
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: Colors.grey[300]!),
             ),
-            
-            const SizedBox(width: 16),
-            
-            // Icône de départ
-            Container(
-              width: 24,
-              height: 24,
-              decoration: const BoxDecoration(
+            child: const Text(
+              'Départ',
+              style: TextStyle(
+                fontSize: 14,
                 color: Color(0xFFDC2626),
-                shape: BoxShape.circle,
-              ),
-              child: const Center(
-                child: Icon(
-                  Icons.location_on,
-                  color: Colors.white,
-                  size: 14,
-                ),
+                fontWeight: FontWeight.w600,
               ),
             ),
-            
-            const SizedBox(width: 16),
-            
-            // Boîte adresse de départ
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.grey[300]!),
-                ),
-                child: const Text(
-                  'Yoff RUE 455',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Color(0xFF1F2937),
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-        
-        // Ligne de connexion pointillée bleue
-        Container(
-          margin: const EdgeInsets.symmetric(vertical: 12),
-          child: Row(
-            children: [
-              const SizedBox(width: 84), // Centrer la ligne sous l'icône
-              Container(
-                width: 24,
-                child: Column(
-                  children: List.generate(8, (index) => Container(
-                    margin: const EdgeInsets.only(bottom: 3),
-                    width: 2,
-                    height: 6,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF3B82F6), // Bleu comme dans l'image
-                      borderRadius: BorderRadius.circular(1),
-                    ),
-                  )),
-                ),
-              ),
-            ],
           ),
-        ),
-        
-        // Arrivée avec layout horizontal
-        Row(
-          children: [
-            // Boîte "Arrivée"
-            Container(
+          
+          const SizedBox(width: 16),
+          
+          // Icône de départ
+          Container(
+            width: 24,
+            height: 24,
+            decoration: const BoxDecoration(
+              color: Color(0xFFDC2626),
+              shape: BoxShape.circle,
+            ),
+            child: const Center(
+              child: Icon(
+                Icons.location_on,
+                color: Colors.white,
+                size: 14,
+              ),
+            ),
+          ),
+          
+          const SizedBox(width: 8),
+          
+          // Boîte adresse de départ - DYNAMIQUE
+          Expanded(
+            child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color: Colors.grey[100],
+                color: Colors.grey[50],
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(color: Colors.grey[300]!),
               ),
-              child: const Text(
-                'Arrivée',
-                style: TextStyle(
+              child: Obx(() => Text(
+                controller.departureAddress.value,
+                style: const TextStyle(
                   fontSize: 14,
-                  color: Color(0xFF10B981),
+                  color: Color(0xFF1F2937),
                   fontWeight: FontWeight.w600,
                 ),
-              ),
+                overflow: TextOverflow.ellipsis, // Gérer les adresses longues
+              )),
             ),
-            
-            const SizedBox(width: 16),
-            
-            // Icône d'arrivée
+          ),
+        ],
+      ),
+      
+      // Ligne de connexion pointillée bleue
+      Container(
+        child: Row(
+          children: [
+            const SizedBox(width: 90), // Centrer la ligne sous l'icône
             Container(
               width: 24,
-              height: 24,
-              decoration: const BoxDecoration(
-                color: Color(0xFF10B981),
-                shape: BoxShape.circle,
-              ),
-              child: const Center(
-                child: Icon(
-                  Icons.location_on,
-                  color: Colors.white,
-                  size: 14,
-                ),
-              ),
-            ),
-            
-            const SizedBox(width: 16),
-            
-            // Boîte adresse d'arrivée
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.grey[300]!),
-                ),
-                child: Obx(() => Text(
-                  controller.destinationAddress.value,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Color(0xFF1F2937),
-                    fontWeight: FontWeight.w600,
+              child: Column(
+                children: List.generate(8, (index) => Container(
+                  margin: const EdgeInsets.only(bottom: 3),
+                  width: 2,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF3B82F6), // Bleu comme dans l'image
+                    borderRadius: BorderRadius.circular(1),
                   ),
                 )),
               ),
             ),
           ],
         ),
-      ],
-    );
-  }
+      ),
+      
+      // Arrivée avec layout horizontal
+      Row(
+        children: [
+          // Boîte "Arrivée"
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.grey[50],
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: Colors.grey[300]!),
+            ),
+            child: const Text(
+              'Arrivée',
+              style: TextStyle(
+                fontSize: 14,
+                color: Color(0xFFDC2626),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          
+          const SizedBox(width: 8),
+          
+          // Icône d'arrivée
+          Container(
+            width: 24,
+            height: 24,
+            decoration: const BoxDecoration(
+              color: Color(0xFF10B981),
+              shape: BoxShape.circle,
+            ),
+            child: const Center(
+              child: Icon(
+                Icons.location_on,
+                color: Colors.white,
+                size: 14,
+              ),
+            ),
+          ),
+          
+          const SizedBox(width: 16),
+          
+          // Boîte adresse d'arrivée - DYNAMIQUE
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.grey[50],
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: Colors.grey[300]!),
+              ),
+              child: Obx(() => Text(
+                controller.destinationAddress.value,
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Color(0xFF1F2937),
+                  fontWeight: FontWeight.w600,
+                ),
+                overflow: TextOverflow.ellipsis, // Gérer les adresses longues
+              )),
+            ),
+          ),
+        ],
+      ),
+    ],
+  );
+}
 
   Widget _buildCancelButton() {
     return SizedBox(
@@ -354,12 +355,91 @@ class DestinationView extends GetView<DestinationController> {
   }
 
   // Afficher le modal d'annulation
-  void _showCancellationModal() {
+void _showCancellationModal() {
+  if (controller.isFromHome.value) {
+    // Si vient de home, utiliser le modal existant
     showModalBottomSheet(
       context: Get.context!,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => const CancellationModalWidget(),
     );
+  } else {
+    // Sinon, afficher un dialog simple
+    showDialog(
+      context: Get.context!,
+      barrierDismissible: true,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 20),
+            const Text(
+              'Voulez-vous vraiment annuler votre commande ?',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF2D3748),
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 32),
+            Row(
+              children: [
+                // Bouton Oui
+                Expanded(
+                  child: TextButton(
+                    onPressed: () {
+                      Get.back(); // Fermer le dialog
+                      controller.handleCancellation(); // CORRECTION: Appeler la méthode du controller
+                    },
+                    child: const Text(
+                      'Oui',
+                      style: TextStyle(
+                        color: Color(0xFF2D3748),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+                
+                Container(
+                  width: 1,
+                  height: 40,
+                  color: Colors.grey[300],
+                ),
+                
+                // Bouton Non
+                Expanded(
+                  child: TextButton(
+                    onPressed: () => Get.back(),
+                    style: TextButton.styleFrom(
+                      foregroundColor: const Color(0xFFDC2626),
+                    ),
+                    child: const Text(
+                      'Non',
+                      style: TextStyle(
+                        color: Color(0xFFDC2626),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
   }
+}
+
+// Méthode pour gérer l'annulation après confirmation
+
 }

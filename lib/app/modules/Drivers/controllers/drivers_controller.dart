@@ -8,6 +8,7 @@ class Driver {
   final String time;
   final bool isActive;
   final String avatar;
+  final String service; // Nouveau champ pour le service
 
   Driver({
     required this.id,
@@ -17,6 +18,7 @@ class Driver {
     required this.time,
     required this.isActive,
     this.avatar = '',
+    this.service = '',
   });
 }
 
@@ -44,6 +46,8 @@ class DriversController extends GetxController {
           distance: '5 m de ta position',
           time: '',
           isActive: true,
+          avatar: 'assets/images/user_map_icone.png',
+          service: 'assets/images/moto_livraison.png',
         ),
         Driver(
           id: '2',
@@ -52,6 +56,8 @@ class DriversController extends GetxController {
           distance: '0m de ta position',
           time: '',
           isActive: false,
+          avatar: 'assets/images/user_map_icone.png',
+          service: 'assets/images/moto_livraison.png',
         ),
         Driver(
           id: '3',
@@ -60,6 +66,8 @@ class DriversController extends GetxController {
           distance: 'Position désactivée',
           time: '',
           isActive: true,
+          avatar: 'assets/images/user_map_icone.png',
+          service: 'assets/images/moto_taxi.png',
         ),
         Driver(
           id: '4',
@@ -68,6 +76,8 @@ class DriversController extends GetxController {
           distance: '2 Km de la position',
           time: '',
           isActive: false,
+          avatar: 'assets/images/user_map_icone.png',
+          service: 'assets/images/moto_bagage.png',
         ),
       ];
       isLoading.value = false;

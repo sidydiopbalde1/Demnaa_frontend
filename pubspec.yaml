@@ -22,6 +22,7 @@ dependencies:
   file_picker: ^10.2.1
   shared_preferences: ^2.2.2
   dio: ^5.4.0
+  url_launcher: ^6.1.12
 
   #url_launcher: ^6.2.2
 
@@ -53,3 +54,13 @@ flutter:
     - assets/images/user_map_icone.png
     - assets/images/demnaa_text.png
     - assets/images/demnaa_first_page.jpeg
+    - assets/images/moto_taxi.png
+    - assets/images/moto_livraison.png
+    - assets/images/moto_bagage.png
+    - assets/images/wave.png
+    - assets/images/orange_money.png
+    - assets/images/k_pay.png
+    - assets/images/cash_money.png
+    - assets/images/Frame.png
+    - assets/images/mamadou.png
+    - assets/images/carte_map.png

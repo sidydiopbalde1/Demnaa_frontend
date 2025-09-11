@@ -1,3 +1,4 @@
+import 'package:demnaa_front/app/models/services_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -9,9 +10,10 @@ import 'dart:async';
 class MotoTaxiOrderController extends GetxController {
   // Observable variables
   var selectedService = 'Moto-taxi'.obs;
-  var destinationAddress = '584 Usine Grand-Dakar, Dakar Grand-Dakar, Dakar, Sénégal'.obs;
-  final currentLocation = LatLng(14.716677, -17.467686).obs; // Dakar par défaut
+  var destinationAddress = '584 Usine Grand-Dakar, Dakar Grand-Dakar'.obs;
+  final currentLocation = LatLng(14.716677, -17.467686).obs;
   final destinationLocation = Rxn<LatLng>();
+  var selectedServiceModel = Rxn<ServiceModel>();
 
   // Variables pour la recherche d'adresse avec API
   var addressSuggestions = <AddressSuggestion>[].obs;
@@ -26,50 +28,71 @@ class MotoTaxiOrderController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    mapController = MapController();
+    
+    // Initialisation sécurisée du MapController
+    try {
+      mapController = MapController();
+    } catch (e) {
+      print('Erreur MapController: $e');
+      mapController = null;
+    }
+    
     _handleNavigationArguments();
     _setDefaultDestination();
     
-    // Initialiser avec une recherche par défaut
-    addressSearchController.text = 'gran';
-    _searchAddresses('gran');
+    // NE PAS faire de recherche automatique pour éviter les erreurs
+    addressSearchController.text = '';
   }
 
   void _handleNavigationArguments() {
-    final arguments = Get.arguments as Map<String, dynamic>?;
-    
-    if (arguments != null) {
-      // Si on vient avec un service prédéfini
-      if (arguments.containsKey('selectedService')) {
-        selectedService.value = arguments['selectedService'];
-      }
+    try {
+      final arguments = Get.arguments as Map<String, dynamic>?;
       
-      // Si on vient avec une adresse prédéfinie
-      if (arguments.containsKey('destination')) {
-        destinationAddress.value = arguments['destination'];
+      if (arguments != null) {
+        // Service prédéfini
+        if (arguments.containsKey('selectedService')) {
+          final service = arguments['selectedService'];
+          if (service != null) {
+            selectedService.value = service.toString();
+          }
+        }
+        
+        // Adresse prédéfinie
+        if (arguments.containsKey('destination')) {
+          final destination = arguments['destination'];
+          if (destination != null) {
+            destinationAddress.value = destination.toString();
+          }
+        }
       }
+    } catch (e) {
+      print('Erreur arguments: $e');
+      selectedService.value = 'Moto-taxi';
     }
   }
 
   void _setDefaultDestination() {
-    // Définir une destination par défaut comme dans la capture
-    destinationLocation.value = LatLng(14.7167, -17.4677); // Position à Dakar
+    destinationLocation.value = LatLng(14.7167, -17.4677);
   }
 
   // Sélectionner un service
   void selectService(String service) {
-    selectedService.value = service;
-    
-    Get.showSnackbar(
-      GetSnackBar(
-        message: 'Service $service sélectionné',
-        duration: const Duration(seconds: 1),
-        backgroundColor: const Color(0xFF10B981),
-        borderRadius: 8,
-        margin: const EdgeInsets.all(16),
-        snackPosition: SnackPosition.TOP,
-      ),
-    );
+    try {
+      selectedService.value = service;
+      
+      Get.showSnackbar(
+        GetSnackBar(
+          message: 'Service $service sélectionné',
+          duration: const Duration(seconds: 1),
+          backgroundColor: const Color(0xFF10B981),
+          borderRadius: 8,
+          margin: const EdgeInsets.all(16),
+          snackPosition: SnackPosition.TOP,
+        ),
+      );
+    } catch (e) {
+      print('Erreur selectService: $e');
+    }
   }
 
   // Ajouter un arrêt
@@ -88,7 +111,6 @@ class MotoTaxiOrderController extends GetxController {
 
   // Ouvrir la recherche d'adresse
   void openAddressSearch() {
-    // Créer le modal de recherche d'adresse comme dans la capture
     _showAddressSearchModal();
   }
 
@@ -101,8 +123,8 @@ class MotoTaxiOrderController extends GetxController {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Color(0xFF00BCD4), // Cyan
-              Color(0xFF4A90E2), // Bleu
+              Color(0xFF00BCD4),
+              Color(0xFF4A90E2),
             ],
           ),
           borderRadius: BorderRadius.only(
@@ -112,17 +134,14 @@ class MotoTaxiOrderController extends GetxController {
         ),
         child: Column(
           children: [
-            // Header du modal avec champ de recherche
+            // Header du modal
             Container(
               padding: const EdgeInsets.all(20),
               child: Row(
                 children: [
                   IconButton(
                     onPressed: () => Get.back(),
-                    icon: const Icon(
-                      Icons.close,
-                      color: Colors.white,
-                    ),
+                    icon: const Icon(Icons.close, color: Colors.white),
                   ),
                   Expanded(
                     child: Container(
@@ -139,7 +158,7 @@ class MotoTaxiOrderController extends GetxController {
                           fontWeight: FontWeight.w500,
                         ),
                         decoration: InputDecoration(
-                          hintText: 'gran',
+                          hintText: 'Rechercher une adresse...',
                           hintStyle: TextStyle(
                             color: Colors.white.withOpacity(0.8),
                             fontSize: 16,
@@ -163,7 +182,6 @@ class MotoTaxiOrderController extends GetxController {
                           ),
                         ),
                         onChanged: (value) {
-                          // Filtrer les suggestions en temps réel
                           _filterSuggestions(value);
                         },
                         onSubmitted: (value) {
@@ -176,7 +194,7 @@ class MotoTaxiOrderController extends GetxController {
               ),
             ),
             
-            // Liste des suggestions d'adresses
+            // Liste des suggestions
             Expanded(
               child: Container(
                 margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -202,17 +220,12 @@ class MotoTaxiOrderController extends GetxController {
     isSearching.value = true;
 
     try {
-      // Ajouter "Dakar" à la requête pour cibler la ville
-      // final searchQuery = '$query Dakar Sénégal';
-      
       final response = await http.get(
         Uri.parse(
           'https://nominatim.openstreetmap.org/search?q=${Uri.encodeComponent(query)}&format=jsonv2&addressdetails=1&limit=5&countrycodes=sn'
-        ),  
-        headers: {
-          'User-Agent': 'DemnaaApp/1.0',
-        },
-      );
+        ),
+        headers: {'User-Agent': 'DemnaaApp/1.0'},
+      ).timeout(Duration(seconds: 5));
 
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
@@ -226,23 +239,20 @@ class MotoTaxiOrderController extends GetxController {
         addressSuggestions.value = suggestions;
       }
     } catch (e) {
-      print('Erreur lors de la recherche d\'adresses: $e');
-      // En cas d'erreur, afficher des suggestions par défaut
+      print('Erreur recherche adresses: $e');
       _setDefaultSuggestions(query);
     } finally {
       isSearching.value = false;
     }
   }
 
-  // Suggestions par défaut si l'API échoue
+  // Suggestions par défaut
   void _setDefaultSuggestions(String query) {
     final defaultSuggestions = [
       '584 Usine Grand-Dakar, Dakar Grand-Dakar, Dakar, Sénégal',
       '1115 Usine Grand-Dakar, Dakar Grand-Dakar, Dakar, Sénégal',
       '547 Usine Grand-Dakar, Dakar Grand-Dakar, Sénégal',
-      '584 Usine Grand-Dakar, Dakar Grand-Dakar, Dakar, Sénégal',
       '594 Usine Grand-Dakar, Dakar Grand-Dakar, Sénégal',
-      '584 Usine Grand-Dakar, Dakar Grand-Dakar, Sénégal',
     ];
 
     addressSuggestions.value = defaultSuggestions
@@ -260,7 +270,6 @@ class MotoTaxiOrderController extends GetxController {
     final address = item['address'] ?? {};
     List<String> parts = [];
 
-    // Priorité aux éléments les plus spécifiques
     if (address['house_number'] != null && address['road'] != null) {
       parts.add('${address['house_number']} ${address['road']}');
     } else if (address['road'] != null) {
@@ -275,7 +284,6 @@ class MotoTaxiOrderController extends GetxController {
     return parts.isNotEmpty ? parts.join(', ') : item['display_name'] ?? '';
   }
 
-  // Filtrer les suggestions basées sur l'input utilisateur avec debouncing
   void _filterSuggestions(String query) {
     _searchDebounce?.cancel();
     _searchDebounce = Timer(const Duration(milliseconds: 300), () {
@@ -283,7 +291,6 @@ class MotoTaxiOrderController extends GetxController {
     });
   }
 
-  // Rechercher une adresse
   void _searchAddress(String query) {
     if (query.isNotEmpty) {
       destinationAddress.value = query;
@@ -296,10 +303,8 @@ class MotoTaxiOrderController extends GetxController {
     List<Widget> widgets = [];
     
     for (int i = 0; i < addressSuggestions.length; i++) {
-      // Ajouter l'item de suggestion
       widgets.add(_buildSuggestionItem(addressSuggestions[i]));
       
-      // Ajouter la ligne pointillée sauf pour le dernier élément
       if (i < addressSuggestions.length - 1) {
         widgets.add(_buildDottedLine());
       }
@@ -320,17 +325,17 @@ class MotoTaxiOrderController extends GetxController {
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 0),
         child: Row(
           children: [
-            // Point blanc à gauche
+            // Icône de localisation au lieu de l'asset manquant
             Container(
-              width: 8,
-              height: 8,
-              decoration: const BoxDecoration(
+              width: 20,
+              height: 20,
+              child: Icon(
+                Icons.location_on,
                 color: Colors.white,
-                shape: BoxShape.circle,
+                size: 16,
               ),
             ),
             const SizedBox(width: 16),
-            // Texte de l'adresse
             Expanded(
               child: Text(
                 suggestion.address,
@@ -352,7 +357,7 @@ class MotoTaxiOrderController extends GetxController {
       margin: const EdgeInsets.symmetric(horizontal: 0),
       child: Row(
         children: [
-          const SizedBox(width: 24), // Alignement avec le texte
+          const SizedBox(width: 24),
           Expanded(
             child: Container(
               height: 1,
@@ -366,7 +371,7 @@ class MotoTaxiOrderController extends GetxController {
     );
   }
 
-  // Raccourcis (Domicile, Bureau, etc.)
+  // Raccourcis
   void selectShortcut(String shortcutType) {
     switch (shortcutType) {
       case 'home':
@@ -406,53 +411,122 @@ class MotoTaxiOrderController extends GetxController {
     );
   }
 
-  // Commander la course
+  // CORRECTION MAJEURE : Commander avec logique corrigée
   Future<void> commander() async {
-    if (destinationAddress.value == '584 Usine Grand-Dakar, Dakar Grand-Dakar, Dakar, Sénégal' ||
-        destinationAddress.value.isEmpty) {
+    try {
+      // Validation CORRECTE
+      if (destinationAddress.value == '584 Usine Grand-Dakar, Dakar Grand-Dakar' ||
+          destinationAddress.value.isEmpty) {
+        Get.snackbar(
+          'Attention',
+          'Veuillez sélectionner une destination',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.orange,
+          colorText: Colors.white,
+        );
+        return; // IMPORTANT : sortir ici si validation échoue
+      }
+
+      // Simulation de la commande
+      // Get.showSnackbar(
+      //   GetSnackBar(
+      //     message: 'Recherche d\'un conducteur ${selectedService.value}...',
+      //     duration: const Duration(seconds: 2),
+      //     backgroundColor: const Color(0xFF10B981),
+      //     borderRadius: 8,
+      //     margin: const EdgeInsets.all(16),
+      //     snackPosition: SnackPosition.BOTTOM,
+      //     showProgressIndicator: true,
+      //   ),
+      // );
+
+      await Future.delayed(const Duration(seconds: 2));
+        Get.toNamed('/delivery-tracking', arguments: {
+        'departure': destinationAddress.value,
+        'destination': destinationAddress.value,
+        'service': selectedService.value,
+        'serviceModel': selectedServiceModel.value,
+      });
+      // Afficher dialog de succès au lieu de naviguer vers route inexistante
+      // _showSuccessDialog();
+      
+    } catch (e) {
+      print('Erreur commander: $e');
       Get.snackbar(
-        'Attention',
-        'Veuillez sélectionner une destination',
+        'Erreur',
+        'Une erreur est survenue',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.orange,
+        backgroundColor: Colors.red,
         colorText: Colors.white,
       );
-      return;
     }
+  }
 
-    // Simulation de la commande
-    Get.showSnackbar(
-      GetSnackBar(
-        message: 'Recherche d\'un conducteur ${selectedService.value}...',
-        duration: const Duration(seconds: 2),
-        backgroundColor: const Color(0xFF10B981),
-        borderRadius: 8,
-        margin: const EdgeInsets.all(16),
-        snackPosition: SnackPosition.BOTTOM,
-        showProgressIndicator: true,
+  void _showSuccessDialog() {
+    Get.dialog(
+      AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            Icon(Icons.check_circle, color: Color(0xFF10B981), size: 30),
+            SizedBox(width: 10),
+            Text('Commande confirmée'),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('Service: ${selectedService.value}'),
+            SizedBox(height: 8),
+            Text('Destination: ${destinationAddress.value}'),
+            SizedBox(height: 16),
+            Container(
+              padding: EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.green[50],
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                'Un conducteur vous contactera bientôt.',
+                style: TextStyle(color: Colors.green[700]),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Get.back(); // Fermer dialog
+              Get.back(); // Retour page précédente
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xFF10B981), Color(0xFF4A90E2)],
+                ),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text('OK', style: TextStyle(color: Colors.white)),
+            ),
+          ),
+        ],
       ),
+      barrierDismissible: false,
     );
-
-    // Attendre 2 secondes puis naviguer vers le suivi
-    await Future.delayed(const Duration(seconds: 2));
-    
-    Get.toNamed('/ride-tracking', arguments: {
-      'service': selectedService.value,
-      'destination': destinationAddress.value,
-      'pickup': currentLocation.value,
-    });
   }
 
-  // Tap sur la carte
+  // Tap sur carte
   void onMapTap(LatLng point) {
-    destinationLocation.value = point;
-    currentLocation.value = point;
-    
-    // Géocodage inverse pour obtenir l'adresse
-    _reverseGeocode(point);
+    try {
+      destinationLocation.value = point;
+      _reverseGeocode(point);
+    } catch (e) {
+      print('Erreur onMapTap: $e');
+    }
   }
 
-  // Géocodage inverse pour obtenir l'adresse depuis les coordonnées
+  // Géocodage inverse
   Future<void> _reverseGeocode(LatLng point) async {
     try {
       final response = await http.get(
@@ -464,10 +538,8 @@ class MotoTaxiOrderController extends GetxController {
           'zoom=18&'
           'addressdetails=1'
         ),
-        headers: {
-          'User-Agent': 'DemnaaApp/1.0',
-        },
-      );
+        headers: {'User-Agent': 'DemnaaApp/1.0'},
+      ).timeout(Duration(seconds: 5));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -476,21 +548,10 @@ class MotoTaxiOrderController extends GetxController {
         _showSelectionFeedback('Nouvelle destination définie');
       }
     } catch (e) {
-      print('Erreur lors du géocodage inverse: $e');
+      print('Erreur géocodage: $e');
+      destinationAddress.value = 'Position sélectionnée';
     }
   }
-
-  // String _formatAddress(Map<String, dynamic> data) {
-  //   final address = data['address'] ?? {};
-  //   List<String> parts = [];
-    
-  //   if (address['road'] != null) parts.add(address['road']);
-  //   if (address['suburb'] != null) parts.add(address['suburb']);
-  //   if (address['city'] != null) parts.add(address['city']);
-  //   if (address['country'] != null) parts.add(address['country']);
-    
-  //   return parts.isNotEmpty ? parts.join(', ') : data['display_name'] ?? '';
-  // }
 
   void _showSelectionFeedback(String message) {
     Get.showSnackbar(
@@ -507,13 +568,17 @@ class MotoTaxiOrderController extends GetxController {
 
   @override
   void onClose() {
-    _searchDebounce?.cancel();
-    addressSearchController.dispose();
+    try {
+      _searchDebounce?.cancel();
+      addressSearchController.dispose();
+    } catch (e) {
+      print('Erreur onClose: $e');
+    }
     super.onClose();
   }
 }
 
-// Classe pour dessiner les lignes pointillées
+// Classes helper inchangées
 class DottedLinePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
@@ -539,7 +604,6 @@ class DottedLinePainter extends CustomPainter {
   bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
 
-// Classe pour les suggestions d'adresses
 class AddressSuggestion {
   final String displayName;
   final double lat;

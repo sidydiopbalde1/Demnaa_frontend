@@ -1,5 +1,5 @@
-import 'package:demnaa_front/app/modules/auth/views/splash_screen.dart';
-import 'package:demnaa_front/app/modules/home/views/demarage_view.dart';
+import 'package:demnaa_front/app/modules/delivery_tracking/views/delivery_success_view.dart';
+import 'package:demnaa_front/app/modules/delivery_tracking/views/final_delivery_tracking_view.dart';
 import 'package:get/get.dart';
 
 import '../modules/Account/bindings/account_binding.dart';
@@ -8,15 +8,14 @@ import '../modules/Drivers/bindings/drivers_binding.dart';
 import '../modules/Drivers/views/dirvers_empty_view.dart';
 import '../modules/Drivers/views/drivers_listfull_view.dart';
 import '../modules/Drivers/views/drivers_main_view.dart';
-// import '../modules/Drivers/views/drivers_view.dart';
+import '../modules/PaymentSelection/bindings/payment_selection_binding.dart';
+import '../modules/PaymentSelection/views/payment_selection_view.dart';
 import '../modules/Profil/bindings/profil_binding.dart';
 import '../modules/Profil/views/profil_view.dart';
 import '../modules/adresse_search/bindings/adresse_search_binding.dart';
 import '../modules/adresse_search/views/adresse_search_view.dart';
 import '../modules/auth/bindings/auth_binding.dart';
-// import '../modules/auth/views/auth_view.dart';
-// import '../modules/commande/bindings/commande_binding.dart';
-// import '../modules/commande/views/commande_view.dart';
+import '../modules/auth/views/splash_screen.dart';
 import '../modules/create_favorite_place/bindings/create_favorite_place_binding.dart';
 import '../modules/create_favorite_place/views/create_favorite_place_view.dart';
 import '../modules/delivery/bindings/delivery_binding.dart';
@@ -30,6 +29,7 @@ import '../modules/driver_search/views/driver_search_view.dart';
 import '../modules/history/bindings/history_binding.dart';
 import '../modules/history/views/history_view.dart';
 import '../modules/home/bindings/home_binding.dart';
+import '../modules/home/views/demarage_view.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/motoTaxiOrder/bindings/moto_taxi_order_binding.dart';
 import '../modules/motoTaxiOrder/views/moto_taxi_order_view.dart';
@@ -38,12 +38,17 @@ import '../modules/register/views/register_view.dart';
 import '../modules/reverse_geocoding/bindings/reverse_geocoding_binding.dart';
 import '../modules/reverse_geocoding/views/reverse_geocoding_view.dart';
 import '../modules/settings/bindings/settings_binding.dart';
-// import '../modules/settings/controllers/contact_controller.dart';
-// import '../modules/settings/controllers/settings_controller.dart';
 import '../modules/settings/views/contact_view.dart';
 import '../modules/settings/views/langage_settings_view.dart';
 import '../modules/settings/views/settings_view.dart';
 import '../modules/settings/views/theme_settings_view.dart';
+
+// import '../modules/Drivers/views/drivers_view.dart';
+// import '../modules/auth/views/auth_view.dart';
+// import '../modules/commande/bindings/commande_binding.dart';
+// import '../modules/commande/views/commande_view.dart';
+// import '../modules/settings/controllers/contact_controller.dart';
+// import '../modules/settings/controllers/settings_controller.dart';
 
 part 'app_routes.dart';
 
@@ -58,7 +63,7 @@ class AppPages {
       page: () => HomeView(),
       binding: HomeBinding(),
     ),
-      GetPage(
+    GetPage(
       name: _Paths.DEMARRAGE,
       page: () => DemarageView(),
       binding: HomeBinding(),
@@ -87,6 +92,7 @@ class AppPages {
       name: _Paths.ADRESSE_SEARCH,
       page: () => const AddressSearchView(),
       binding: AddressSearchBinding(),
+      preventDuplicates: true, // Éviter les doublons de page
     ),
     GetPage(
       name: _Paths.DELIVERY_TRACKING,
@@ -210,6 +216,21 @@ class AppPages {
       name: _Paths.REGISTER,
       page: () => const RegisterView(),
       binding: RegisterBinding(),
+    ),
+    GetPage(
+      name: _Paths.PAYMENT_SELECTION,
+      page: () => const PaymentSelectionView(),
+      binding: PaymentSelectionBinding(),
+    ),
+     GetPage(
+      name: _Paths.FINAL_DELIVERY_TRACKING,
+      page: () => const FinalDeliveryTrackingView(),
+      binding: DeliveryTrackingBinding(),
+    ),
+     GetPage(
+      name: _Paths.DELIVERY_SUCCESS,
+      page: () => const DeliverySuccessView(),
+      binding: DeliveryTrackingBinding(),
     ),
   ];
 }

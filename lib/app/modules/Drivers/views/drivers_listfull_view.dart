@@ -9,7 +9,7 @@ class DriversListFullView extends GetView<DriversController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: Colors.white,
       appBar: DemNaaAppBar(
         title: 'Mes conducteurs',
         actions: [
@@ -20,18 +20,19 @@ class DriversListFullView extends GetView<DriversController> {
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16),
+   
+        padding: const EdgeInsets.all(30),
         child: Column(
           children: [
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(30),
+                  borderRadius: BorderRadius.circular(20),
                   border: Border.all(color: const Color.fromARGB(255, 107, 9, 235).withOpacity(1)),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withOpacity(0.01),
                       blurRadius: 10,
                       offset: const Offset(0, 2),
                     ),
@@ -57,9 +58,9 @@ class DriversListFullView extends GetView<DriversController> {
                   }
 
                   return ListView.separated(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(5),
                     itemCount: controller.drivers.length,
-                    separatorBuilder: (context, index) => const SizedBox(height: 16),
+                    separatorBuilder: (context, index) => const SizedBox(height: 10),
                     itemBuilder: (context, index) {
                       final driver = controller.drivers[index];
                       return _buildDriverItem(driver);
@@ -76,7 +77,7 @@ class DriversListFullView extends GetView<DriversController> {
         onTap: (index) {
           switch (index) {
             case 0:
-              // Navigate to Historique
+              Get.offAllNamed('/history');
               break;
             case 1:
               Get.offAllNamed('/home');
@@ -103,7 +104,7 @@ class DriversListFullView extends GetView<DriversController> {
             fontWeight: FontWeight.w500,
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 2),
         // Card du conducteur
         _buildDriverCard(driver),
       ],
@@ -112,20 +113,20 @@ class DriversListFullView extends GetView<DriversController> {
 
   Widget _buildDriverCard(Driver driver) {
     final statusColor = driver.isActive ? const Color(0xFF10B981) : Colors.red;
-    final statusText = driver.status.toUpperCase();
+    final statusText = driver.status;
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      // padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color.fromARGB(0, 26, 64, 179),
-        borderRadius: BorderRadius.circular(12),
+        color: Colors.blue.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(8),
         border: Border.all(color: Colors.grey.withOpacity(0.2)),
       ),
       child: Row(
         children: [
           // Avatar
           _buildAvatar(driver),
-          const SizedBox(width: 12),
+          const SizedBox(width: 10),
           // Nom et statut
           Expanded(
             child: Column(
@@ -134,7 +135,7 @@ class DriversListFullView extends GetView<DriversController> {
                 Text(
                   driver.name,
                   style: const TextStyle(
-                    fontSize: 16,
+                    fontSize: 10,
                     fontWeight: FontWeight.w600,
                     color: Colors.black,
                   ),
@@ -142,10 +143,7 @@ class DriversListFullView extends GetView<DriversController> {
                 const SizedBox(height: 4),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: statusColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
+                
                   child: Text(
                     '• $statusText',
                     style: TextStyle(
@@ -161,11 +159,7 @@ class DriversListFullView extends GetView<DriversController> {
           // Actions
           Row(
             children: [
-             _buildActionButton(
-                icon: Icons.directions_car,
-                color: const Color(0xFF3B82F6),
-                onTap: () => Get.toNamed('/adresse-search', arguments: {'driverId': driver.id, 'driverName': driver.name}),
-              ),
+             Image(image: Image.asset(driver.service).image, width: 20, height: 20,),
               const SizedBox(width: 8),
               _buildActionButton(
                 icon: Icons.location_on,
@@ -187,8 +181,8 @@ class DriversListFullView extends GetView<DriversController> {
 
   Widget _buildAvatar(Driver driver) {
     return Container(
-      width: 50,
-      height: 50,
+      width: 35,
+      height: 35,
       decoration: const BoxDecoration(
         color: Color(0xFFE6F3FF),
         shape: BoxShape.circle,
@@ -224,11 +218,11 @@ class DriversListFullView extends GetView<DriversController> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 32,
-        height: 32,
+        width: 30,
+        height: 30,
         decoration: BoxDecoration(
           color: color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(20),
         ),
         child: Icon(
           icon,

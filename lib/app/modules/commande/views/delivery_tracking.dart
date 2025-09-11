@@ -40,13 +40,13 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen>
           children: [
             // Header
             _buildHeader(),
-            
+
             // Map Area
             Expanded(
               flex: 3,
               child: _buildMapArea(),
             ),
-            
+
             // Course Info Section
             _buildCourseInfoSection(),
           ],
@@ -118,7 +118,7 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen>
             right: 80,
             child: _buildMapPin(Colors.green, Icons.location_on),
           ),
-          
+
           // Ligne de trajet simulée
           Positioned(
             top: 100,
@@ -128,7 +128,7 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen>
               painter: RoutePainter(),
             ),
           ),
-          
+
           // Pin principal de localisation
           Positioned(
             top: MediaQuery.of(context).size.height * 0.15,
@@ -222,8 +222,8 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen>
                     color: Color(0xFF2D3748),
                   ),
                 ),
-                const SizedBox(height: 16),
-                
+                const SizedBox(height: 10),
+
                 // Transport Options
                 Row(
                   children: [
@@ -246,7 +246,7 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen>
               ],
             ),
           ),
-          
+
           // Arrival Info
           Container(
             width: double.infinity,
@@ -262,7 +262,7 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen>
                       color: const Color(0xFF2563EB),
                       size: 16,
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 4),
                     const Text(
                       'Arrive dans ~3 min',
                       style: TextStyle(
@@ -284,7 +284,7 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen>
               ],
             ),
           ),
-          
+
           // Price Section
           Padding(
             padding: const EdgeInsets.all(20),
@@ -299,7 +299,7 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen>
                   ),
                 ),
                 const SizedBox(height: 16),
-                
+
                 // Progress Bar
                 Container(
                   width: double.infinity,
@@ -329,7 +329,7 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen>
               ],
             ),
           ),
-          
+
           // Action Button
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
@@ -385,7 +385,8 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen>
         decoration: BoxDecoration(
           color: isSelected ? const Color(0xFFEFF6FF) : const Color(0xFFF9FAFB),
           border: Border.all(
-            color: isSelected ? const Color(0xFF3B82F6) : const Color(0xFFE5E7EB),
+            color:
+                isSelected ? const Color(0xFF3B82F6) : const Color(0xFFE5E7EB),
             width: isSelected ? 2 : 1,
           ),
           borderRadius: BorderRadius.circular(12),
@@ -393,7 +394,8 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen>
         child: Center(
           child: Icon(
             icon,
-            color: isSelected ? const Color(0xFF3B82F6) : const Color(0xFF9CA3AF),
+            color:
+                isSelected ? const Color(0xFF3B82F6) : const Color(0xFF9CA3AF),
             size: 24,
           ),
         ),
@@ -418,7 +420,8 @@ class RoutePainter extends CustomPainter {
 
     final path = Path();
     path.moveTo(0, 0);
-    path.quadraticBezierTo(size.width * 0.5, size.height * 0.8, size.width, size.height * 0.6);
+    path.quadraticBezierTo(
+        size.width * 0.5, size.height * 0.8, size.width, size.height * 0.6);
 
     // Create dashed effect
     final dashWidth = 8.0;
