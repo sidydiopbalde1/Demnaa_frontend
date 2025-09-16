@@ -46,6 +46,12 @@ class HomeController extends GetxController with GetTickerProviderStateMixin {
     _startAnimations();
   }
 
+@override
+void onReady() {
+  super.onReady();
+  // Forcer le rechargement des services
+  refreshServices();
+}
   // Charger les services depuis l'API
   Future<void> _loadServices() async {
     try {

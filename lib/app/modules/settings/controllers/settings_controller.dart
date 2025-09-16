@@ -1,3 +1,4 @@
+import 'package:demnaa_front/app/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -207,20 +208,21 @@ class SettingsController extends GetxController {
   }
 
   // Effectuer la déconnexion
-  void _performLogout() {
+  Future<void> _performLogout() async {
    
-    Get.showSnackbar(
-      GetSnackBar(
-        message: 'Déconnexion réussie',
-        duration: const Duration(seconds: 2),
-        backgroundColor: const Color(0xFF10B981),
-        borderRadius: 8,
-        margin: const EdgeInsets.all(16),
-      ),
-    );
-    
+    // Get.showSnackbar(
+    //   GetSnackBar(
+    //     message: 'Déconnexion réussie',
+    //     duration: const Duration(seconds: 2),
+    //     backgroundColor: const Color(0xFF10B981),
+    //     borderRadius: 8,
+    //     margin: const EdgeInsets.all(16),
+    //   ),
+    // );
+      //  final authService = Get.find<AuthService>();
+      // await authService.logout();
     // Rediriger vers l'écran de connexion
-    Get.offAllNamed('/login'); 
+     Get.offAllNamed('/profil-selection'); 
   }
 
   // Sauvegarder les paramètres

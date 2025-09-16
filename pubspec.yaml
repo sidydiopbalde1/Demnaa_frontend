@@ -64,3 +64,11 @@ flutter:
     - assets/images/Frame.png
     - assets/images/mamadou.png
     - assets/images/carte_map.png
+    - assets/images/phone_auth.png
+    - assets/images/phone_otp.png
+    - assets/images/client.png
+    - assets/images/conducteur.png
+    - assets/images/propriétaire_de_motos.png
+    - assets/images/assurance_medicale.png
+    - assets/images/security_badge.png
+    - assets/images/gift.png

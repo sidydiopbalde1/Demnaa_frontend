@@ -52,17 +52,17 @@ class ServiceModel {
   IconData get icon {
     final normalizedLibelle = libelle.toLowerCase();
     
-    if (normalizedLibelle.contains('course') || normalizedLibelle.contains('taxi')) {
-      return Icons.motorcycle;
-    } else if (normalizedLibelle.contains('colis') || normalizedLibelle.contains('livraison')) {
-      return Icons.local_shipping;
-    } else if (normalizedLibelle.contains('santé') || normalizedLibelle.contains('sante')) {
-      return Icons.medical_services;
-    } else if (normalizedLibelle.contains('food') || normalizedLibelle.contains('restaurant')) {
-      return Icons.restaurant;
-    } else {
-      return Icons.miscellaneous_services;
-    }
+      if (normalizedLibelle.contains('course') || normalizedLibelle.contains('taxi')) {
+        return Icons.motorcycle;
+      } else if (normalizedLibelle.contains('colis') || normalizedLibelle.contains('livraison')) {
+        return Icons.local_shipping;
+      } else if (normalizedLibelle.contains('santé') || normalizedLibelle.contains('sante')) {
+        return Icons.medical_services;
+      } else if (normalizedLibelle.contains('food') || normalizedLibelle.contains('restaurant')) {
+        return Icons.restaurant;
+      } else {
+        return Icons.miscellaneous_services;
+      }
   }
 
   // Getter pour le dégradé de couleurs

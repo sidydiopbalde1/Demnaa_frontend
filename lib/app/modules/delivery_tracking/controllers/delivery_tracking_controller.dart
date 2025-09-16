@@ -1,3 +1,4 @@
+import 'package:demnaa_front/app/modules/home/controllers/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -174,40 +175,49 @@ void selectTransport(int index) {
   //       break;
   //   }
   // }
-
-  // Valider la course
-  Future<void> validateCourse() async {
-    isValidating.value = true;
+Future<void> validateCourse() async {
+  isValidating.value = true;
+  
+  try {
+    // Simulation d'appel API
+    await Future.delayed(const Duration(seconds: 2));
     
-    try {
-      // Simulation d'appel API
-      await Future.delayed(const Duration(seconds: 2));
-      
-      
-      // Naviguer vers l'écran de destination ou de suivi
-      Get.toNamed('/destination', arguments: {
-        'courseId': DateTime.now().millisecondsSinceEpoch.toString(),
-        'transport': transportOptions[selectedTransport.value]['name'],
-        'price': price.value,
-        'arrivalTime': arrivalTime.value,
-        'departure': departure.value,
-        'destination': destination.value,
-        'destinationPhone': '784316538', // Numéro fictif pour test
-        'fromHome': Get.currentRoute == '/home', // Déterminer si vient de home
-      });
-      
-    } catch (e) {
-      Get.snackbar(
-        'Erreur',
-        'Impossible de valider la course',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.8),
-        colorText: Colors.white,
-      );
-    } finally {
-      isValidating.value = false;
-    }
+    // Naviguer vers l'écran de destination
+    Get.offAllNamed('/destination', arguments: {
+      'courseId': DateTime.now().millisecondsSinceEpoch.toString(),
+      'transport': transportOptions[selectedTransport.value]['name'],
+      'price': price.value,
+      'arrivalTime': arrivalTime.value,
+      'departure': departure.value,
+      'destination': destination.value,
+      'destinationPhone': '784316538',
+      'fromHome': Get.currentRoute == '/home',
+    });
+    
+    // Refresh du HomeController après navigation (optionnel)
+    Future.delayed(Duration(milliseconds: 500), () {
+      try {
+        if (Get.isRegistered<HomeController>()) {
+          final homeController = Get.find<HomeController>();
+          homeController.refreshServices();
+        }
+      } catch (e) {
+        print('HomeController non trouvé: $e');
+      }
+    });
+    
+  } catch (e) {
+    Get.snackbar(
+      'Erreur',
+      'Impossible de valider la course',
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Colors.red.withOpacity(0.8),
+      colorText: Colors.white,
+    );
+  } finally {
+    isValidating.value = false;
   }
+}
 
   // Annuler la course
   void cancelCourse() {

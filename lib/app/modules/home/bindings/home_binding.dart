@@ -26,6 +26,7 @@ class HomeBinding extends Bindings {
     // 2. HomeController (dépend des services ci-dessus)
     Get.lazyPut<HomeController>(
       () => HomeController(),
+      fenix: true,
     );
      Get.lazyPut<AddressSearchController>(
       () => AddressSearchController(),

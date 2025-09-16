@@ -13,81 +13,81 @@ class SettingsView extends GetView<SettingsController> {
       appBar: const DemNaaAppBar(
         title: 'Paramètres du compte',
       ),
-     body: Padding(
-  padding: const EdgeInsets.all(16),
-  child: Column(
-    children: [
-      // Bloc 1 : Notifications, Langue, Thème
-      DemNaaCard(
-        padding: EdgeInsets.zero,
+      body: Padding(
+        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            Obx(() => _buildSettingsItem(
-              icon: Icons.notifications_outlined,
-              title: 'Notifications push',
-              hasSwitch: true,
-              switchValue: controller.pushNotifications.value,
-              onSwitchChanged: controller.togglePushNotifications,
-            )),
-            _buildDivider(),
-            Obx(() => _buildSettingsItem(
-              icon: Icons.translate,
-              title: 'Langue',
-              subtitle: controller.selectedLanguage.value,
-              hasArrow: true,
-              onTap: controller.goToLanguageSettings,
-            )),
-            _buildDivider(),
-            _buildSettingsItem(
-              icon: Icons.dark_mode_outlined,
-              title: 'Thème',
-              hasArrow: true,
-              onTap: controller.goToThemeSettings,
+            // Bloc 1 : Notifications, Langue, Thème
+            DemNaaCard(
+              padding: EdgeInsets.zero,
+              child: Column(
+                children: [
+                  Obx(() => _buildSettingsItem(
+                        icon: Icons.notifications_outlined,
+                        title: 'Notifications push',
+                        hasSwitch: true,
+                        switchValue: controller.pushNotifications.value,
+                        onSwitchChanged: controller.togglePushNotifications,
+                      )),
+                  _buildDivider(),
+                  Obx(() => _buildSettingsItem(
+                        icon: Icons.translate,
+                        title: 'Langue',
+                        subtitle: controller.selectedLanguage.value,
+                        hasArrow: true,
+                        onTap: controller.goToLanguageSettings,
+                      )),
+                  _buildDivider(),
+                  _buildSettingsItem(
+                    icon: Icons.dark_mode_outlined,
+                    title: 'Thème',
+                    hasArrow: true,
+                    onTap: controller.goToThemeSettings,
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            // Bloc 2 : Politique + Conditions
+            DemNaaCard(
+              padding: EdgeInsets.zero,
+              child: Column(
+                children: [
+                  _buildSettingsItem(
+                    icon: Icons.privacy_tip_outlined,
+                    title: 'Politique de confidentialité',
+                    hasArrow: true,
+                    onTap: controller.goToPrivacyPolicy,
+                  ),
+                  _buildDivider(),
+                  _buildSettingsItem(
+                    icon: Icons.description_outlined,
+                    title: 'Conditions d\'éligibilité',
+                    hasArrow: true,
+                    onTap: controller.goToTermsConditions,
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            // Bloc 3 : Déconnexion
+            DemNaaCard(
+              padding: EdgeInsets.zero,
+              child: _buildSettingsItem(
+                icon: Icons.logout,
+                title: 'Déconnexion',
+                titleColor: Colors.red,
+                iconColor: Colors.red,
+                onTap: controller.logout,
+              ),
             ),
           ],
         ),
       ),
-
-      const SizedBox(height: 16),
-
-      // Bloc 2 : Politique + Conditions
-      DemNaaCard(
-        padding: EdgeInsets.zero,
-        child: Column(
-          children: [
-            _buildSettingsItem(
-              icon: Icons.privacy_tip_outlined,
-              title: 'Politique de confidentialité',
-              hasArrow: true,
-              onTap: controller.goToPrivacyPolicy,
-            ),
-            _buildDivider(),
-            _buildSettingsItem(
-              icon: Icons.description_outlined,
-              title: 'Conditions d\'éligibilité',
-              hasArrow: true,
-              onTap: controller.goToTermsConditions,
-            ),
-          ],
-        ),
-      ),
-
-      const SizedBox(height: 16),
-
-      // Bloc 3 : Déconnexion
-      DemNaaCard(
-        padding: EdgeInsets.zero,
-        child: _buildSettingsItem(
-          icon: Icons.logout,
-          title: 'Déconnexion',
-          titleColor: Colors.red,
-          iconColor: Colors.red,
-          onTap: controller.logout,
-        ),
-      ),
-    ],
-  ),
-),
       bottomNavigationBar: DemNaaBottomNavigation(
         currentIndex: 2,
         onTap: (index) {
@@ -142,9 +142,9 @@ class SettingsView extends GetView<SettingsController> {
                   size: 22,
                 ),
               ),
-              
+
               const SizedBox(width: 16),
-              
+
               // Titre et sous-titre
               Expanded(
                 child: Column(
@@ -171,7 +171,7 @@ class SettingsView extends GetView<SettingsController> {
                   ],
                 ),
               ),
-              
+
               // Switch ou flèche
               if (hasSwitch)
                 Switch(

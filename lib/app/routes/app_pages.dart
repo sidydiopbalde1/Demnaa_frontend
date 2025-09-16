@@ -1,5 +1,3 @@
-import 'package:demnaa_front/app/modules/delivery_tracking/views/delivery_success_view.dart';
-import 'package:demnaa_front/app/modules/delivery_tracking/views/final_delivery_tracking_view.dart';
 import 'package:get/get.dart';
 
 import '../modules/Account/bindings/account_binding.dart';
@@ -15,13 +13,16 @@ import '../modules/Profil/views/profil_view.dart';
 import '../modules/adresse_search/bindings/adresse_search_binding.dart';
 import '../modules/adresse_search/views/adresse_search_view.dart';
 import '../modules/auth/bindings/auth_binding.dart';
+import '../modules/auth/views/phone_verification_view.dart';
 import '../modules/auth/views/splash_screen.dart';
 import '../modules/create_favorite_place/bindings/create_favorite_place_binding.dart';
 import '../modules/create_favorite_place/views/create_favorite_place_view.dart';
 import '../modules/delivery/bindings/delivery_binding.dart';
 import '../modules/delivery/views/delivery_view.dart';
 import '../modules/delivery_tracking/bindings/delivery_tracking_binding.dart';
+import '../modules/delivery_tracking/views/delivery_success_view.dart';
 import '../modules/delivery_tracking/views/delivery_tracking_view.dart';
+import '../modules/delivery_tracking/views/final_delivery_tracking_view.dart';
 import '../modules/destination/bindings/destination_binding.dart';
 import '../modules/destination/views/destination_view.dart';
 import '../modules/driver_search/bindings/driver_search_binding.dart';
@@ -33,6 +34,12 @@ import '../modules/home/views/demarage_view.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/motoTaxiOrder/bindings/moto_taxi_order_binding.dart';
 import '../modules/motoTaxiOrder/views/moto_taxi_order_view.dart';
+import '../modules/onBording/bindings/on_bording_binding.dart';
+import '../modules/onBording/views/on_bording_view.dart';
+import '../modules/otp_verification/bindings/otp_verification_binding.dart';
+import '../modules/otp_verification/views/otp_verification_view.dart';
+import '../modules/profil_selection/bindings/profil_selection_binding.dart';
+import '../modules/profil_selection/views/profil_selection_view.dart';
 import '../modules/register/bindings/register_binding.dart';
 import '../modules/register/views/register_view.dart';
 import '../modules/reverse_geocoding/bindings/reverse_geocoding_binding.dart';
@@ -144,39 +151,6 @@ class AppPages {
       binding: DriversBinding(),
     ),
 
-    // ========================================================================
-    // PAGES À CRÉER (commentées pour éviter les erreurs)
-    // ========================================================================
-    // GetPage(
-    //   name: _Paths.MODIFY_NUMBER,
-    //   page: () => const ModifyNumberView(), // À créer
-    //   binding: AccountBinding(),
-    // ),
-    // GetPage(
-    //   name: _Paths.BECOME_DRIVER,
-    //   page: () => const BecomeDriverView(), // À créer
-    //   binding: AccountBinding(),
-    // ),
-    // GetPage(
-    //   name: _Paths.BECOME_OWNER,
-    //   page: () => const BecomeOwnerView(), // À créer
-    //   binding: AccountBinding(),
-    // ),
-    // GetPage(
-    //   name: _Paths.SETTINGS,
-    //   page: () => const SettingsView(), // À créer
-    //   binding: AccountBinding(),
-    // ),
-    // GetPage(
-    //   name: _Paths.INFORMATIONS,
-    //   page: () => const InformationsView(), // À créer
-    //   binding: AccountBinding(),
-    // ),
-    // GetPage(
-    //   name: _Paths.ADD_DRIVER,
-    //   page: () => const AddDriverView(), // À créer
-    //   binding: DriversBinding(),
-    // ),
     GetPage(
       name: _Paths.SETTINGS,
       page: () => const SettingsView(),
@@ -222,15 +196,36 @@ class AppPages {
       page: () => const PaymentSelectionView(),
       binding: PaymentSelectionBinding(),
     ),
-     GetPage(
+    GetPage(
       name: _Paths.FINAL_DELIVERY_TRACKING,
       page: () => const FinalDeliveryTrackingView(),
       binding: DeliveryTrackingBinding(),
     ),
-     GetPage(
+    GetPage(
       name: _Paths.DELIVERY_SUCCESS,
       page: () => const DeliverySuccessView(),
       binding: DeliveryTrackingBinding(),
+    ),
+    GetPage(
+      name: _Paths.PHONE_VERIFICATION,
+      page: () => const PhoneVerificationView(),
+      binding: AuthBinding(),
+    ),
+
+    GetPage(
+      name: _Paths.OTP_VERIFICATION,
+      page: () => const OtpVerificationView(),
+      binding: OtpVerificationBinding(),
+    ),
+    GetPage(
+      name: _Paths.PROFIL_SELECTION,
+      page: () => const ProfileSelectionView(),
+      binding: ProfilSelectionBinding(),
+    ),
+    GetPage(
+      name: _Paths.ON_BORDING,
+      page: () => const OnboardingView(),
+      binding: OnBordingBinding(),
     ),
   ];
 }

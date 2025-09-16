@@ -8,7 +8,7 @@ A new Flutter project.
 ## commande pour installer les dépendances
     flutter pub get
 
-## commande pour créer une page
+## commande pour créer une page avec tous les fichiers( view, controller, binding)
     get create page:nom_de_la_page
 
 ## commande pour créer un controller

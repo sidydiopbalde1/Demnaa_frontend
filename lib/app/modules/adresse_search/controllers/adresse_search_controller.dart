@@ -83,9 +83,9 @@ class AddressSearchController extends GetxController {
   void _loadDefaultServices() {
     if (availableServices.isEmpty) {
       availableServices.value = [
-        ServiceModel(id: 1, libelle: 'moto-livraison', photo: '', createdAt: DateTime.now(), updatedAt: DateTime.now()),
-        ServiceModel(id: 2, libelle: 'moto-taxi', photo: '', createdAt: DateTime.now(), updatedAt: DateTime.now()),
-        ServiceModel(id: 3, libelle: 'moto-bagage', photo: '', createdAt: DateTime.now(), updatedAt: DateTime.now()),
+        ServiceModel(id: 1, libelle: 'moto-livraison', photo: 'assets/images/moto_livraison.png', createdAt: DateTime.now(), updatedAt: DateTime.now()),
+        ServiceModel(id: 2, libelle: 'moto-taxi', photo: 'assets/images/moto_taxi.png', createdAt: DateTime.now(), updatedAt: DateTime.now()),
+        ServiceModel(id: 3, libelle: 'moto-bagage', photo: 'assets/images/moto_bagage.png', createdAt: DateTime.now(), updatedAt: DateTime.now()),
       ];
       if (showServicesOnMap.value && selectedServiceModel.value == null) {
         selectedServiceModel.value = availableServices.first;

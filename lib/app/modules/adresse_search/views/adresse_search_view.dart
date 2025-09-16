@@ -45,7 +45,7 @@ class AddressSearchView extends GetView<AddressSearchController> {
             ),
           ),
 
-          const SizedBox(width: 40), // Pour équilibrer le bouton retour
+          const SizedBox(width: 40), 
         ],
       ),
     );
@@ -231,7 +231,7 @@ class AddressSearchView extends GetView<AddressSearchController> {
                     onTap: () => controller.selectServiceFromMap(service),
                     child: Container(
                       width: isSelected ? 102 : 90,
-                      height: isSelected ? 32 : 24,
+                      height: isSelected ? 35 : 24,
                       margin: const EdgeInsets.only(left: 8),
                       decoration: BoxDecoration(
                         color: isSelected
@@ -505,6 +505,7 @@ class AddressSearchView extends GetView<AddressSearchController> {
                 keyboardType: TextInputType.phone,
                 decoration: InputDecoration(
                   hintText: 'Numéro de téléphone',
+                
                   hintStyle: const TextStyle(
                     color: Color(0xFF9CA3AF),
                   ),

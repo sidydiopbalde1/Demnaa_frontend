@@ -17,7 +17,7 @@ class _DemarageViewState extends State<DemarageView> {
 
     // Attendre 5 secondes puis naviguer vers Home
     Timer(const Duration(seconds: 10), () {
-      Get.offNamed('/home'); // 🔹 si tu utilises GetX
+      Get.offNamed('/profil-selection'); // 🔹 si tu utilises GetX
       // Navigator.pushReplacementNamed(context, '/home'); // 🔹 si tu utilises Navigator classique
     });
   }

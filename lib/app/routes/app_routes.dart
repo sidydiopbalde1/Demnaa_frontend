@@ -34,6 +34,9 @@ abstract class Routes {
   static const PAYMENT_SELECTION = _Paths.PAYMENT_SELECTION;
   static const FINAL_DELIVERY_TRACKING = _Paths.FINAL_DELIVERY_TRACKING;
   static const DELIVERY_SUCCESS = _Paths.DELIVERY_SUCCESS;
+  static const OTP_VERIFICATION = _Paths.OTP_VERIFICATION;
+  static const PROFIL_SELECTION = _Paths.PROFIL_SELECTION;
+  static const ON_BORDING = _Paths.ON_BORDING;
 }
 
 abstract class _Paths {
@@ -69,4 +72,8 @@ abstract class _Paths {
   static const PAYMENT_SELECTION = '/payment-selection';
   static const FINAL_DELIVERY_TRACKING = '/final-delivery-tracking';
   static const DELIVERY_SUCCESS = '/delivery-success';
+  static const PHONE_VERIFICATION = '/phone-verification';
+  static const OTP_VERIFICATION = '/otp-verification';
+  static const PROFIL_SELECTION = '/profil-selection';
+  static const ON_BORDING = '/on-bording';
 }
